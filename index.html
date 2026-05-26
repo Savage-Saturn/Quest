@@ -572,7 +572,7 @@ let currentProfile = null;
 <script>
 // Run synchronously before anything renders — prevents login/onboarding flash
 if(localStorage.getItem('quest_stay_signed_in')==='true'){
-  document.write('<style>#login-screen,#onboarding-screen{display:none!important}#app{opacity:1!important;visibility:visible!important}</style>');
+  document.write('<style>#login-screen,#onboarding-screen{display:none!important}#app{display:block!important;opacity:1!important}</style>');
 }
 </script>
 <div id="login-screen" style="
@@ -741,7 +741,7 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
   </div>
 </div>
 
-<div id="app">
+<div id="app" style="display:none">
   <div id="sidebar">
     <div id="sidebar-header">
       <div class="logo" onclick="toggleSidebar()">
@@ -3965,7 +3965,7 @@ async function submitNewPassword(){
       currentUser=session.user;
       await loadProfile();
       document.getElementById('login-screen').style.display='none';
-      document.getElementById('app').style.visibility='visible';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';
+      document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';
       initApp();
     }
   }
@@ -3980,7 +3980,7 @@ async function submitNewPassword(){
   const btn=document.querySelector('#forgot-modal button');
   if(btn){btn.textContent='Sending...';btn.disabled=true;}
   const{error}=await sb.auth.resetPasswordForEmail(email,{
-    redirectTo:'https://guileless-tiramisu-d8990f.netlify.app'
+    redirectTo:'https://quest-new-zeta.vercel.app'
   });
   if(error){
     showToast(error.message);
@@ -4035,7 +4035,7 @@ async function doSocialLogin(provider){
   else localStorage.removeItem('quest_stay_signed_in');
   const {error}=await sb.auth.signInWithOAuth({
     provider:provider.toLowerCase(),
-    options:{redirectTo:'https://guileless-tiramisu-d8990f.netlify.app'}
+    options:{redirectTo:'https://quest-new-zeta.vercel.app'}
   });
   if(error) showToast(error.message);
 }
@@ -4142,7 +4142,7 @@ async function checkSession(){
     await loadProfile();
     document.getElementById('login-screen').style.display='none';
     document.getElementById('onboarding-screen').style.display='none';
-    document.getElementById('app').style.visibility='visible';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';
+    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';
     initApp();
     setTimeout(()=>locateMe(),1000);
   } else if(staySignedIn){
@@ -4200,15 +4200,13 @@ function finishOnboarding(){
   ob.style.transition='opacity 0.4s';
   setTimeout(()=>{
     ob.style.display='none';
-    document.getElementById('app').style.visibility='visible';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';
+    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';
     initApp(); // init map — no location request yet
   },400);
 }
 
 // Start app hidden until login completes
-document.getElementById('app').style.visibility='hidden';
-document.getElementById('app').style.opacity='0';
-document.getElementById('app').style.transition='opacity 0.4s';
+// app starts hidden via display:none in HTML
 </script>
 <script>
 let selectedPlan = 'annual';
