@@ -3893,16 +3893,19 @@ async function doForgotPassword(){
         style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:14px"
         onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
         onkeydown="if(event.key==='Enter')sendResetLink()"/>
-      <button onclick="sendResetLink()"
+      <button id="forgot-send-btn"
         style="width:100%;padding:14px;border-radius:12px;border:none;background:var(--orange);color:#fff;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px">
         Send reset link
       </button>
-      <button onclick="document.getElementById('forgot-modal').remove()"
+      <button id="forgot-cancel-btn"
         style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:rgba(255,255,255,0.45);font-family:'Sora',sans-serif;font-size:13px;cursor:pointer">
         Cancel
       </button>
     </div>`;
   document.body.appendChild(modal);
+  document.getElementById('forgot-send-btn').addEventListener('click', sendResetLink);
+  document.getElementById('forgot-cancel-btn').addEventListener('click', ()=>modal.remove());
+  document.getElementById('reset-email').addEventListener('keydown', e=>{if(e.key==='Enter')sendResetLink();});
   setTimeout(()=>document.getElementById('reset-email')?.focus(),50);
 }
 
@@ -3923,18 +3926,26 @@ async function checkPasswordReset(){
       <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:6px">Set new password</div>
       <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:20px">Choose a strong password for your account.</div>
       <input id="reset-new-pass" type="password" placeholder="New password (min 8 chars)"
-        style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:12px"
-        onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"/>
+        style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:12px"/>
       <input id="reset-confirm-pass" type="password" placeholder="Confirm new password"
-        style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:16px"
-        onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
-        onkeydown="if(event.key==='Enter')submitNewPassword()"/>
-      <button onclick="submitNewPassword()" id="reset-submit-btn"
+        style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:6px"/>
+      <div id="reset-match-msg" style="font-size:12px;margin-bottom:12px;min-height:16px;color:#e05050"></div>
+      <button id="reset-submit-btn"
         style="width:100%;padding:14px;border-radius:12px;border:none;background:var(--orange);color:#fff;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer">
         Update password
       </button>
     </div>`;
   document.body.appendChild(modal);
+  document.getElementById('reset-submit-btn').addEventListener('click', submitNewPassword);
+  document.getElementById('reset-new-pass').addEventListener('keydown', e=>{if(e.key==='Enter')submitNewPassword();});
+  document.getElementById('reset-confirm-pass').addEventListener('keydown', e=>{if(e.key==='Enter')submitNewPassword();});
+  document.getElementById('reset-confirm-pass').addEventListener('input', ()=>{
+    const p=document.getElementById('reset-new-pass').value;
+    const c=document.getElementById('reset-confirm-pass').value;
+    document.getElementById('reset-confirm-pass').style.borderColor=c&&c!==p?'#e05050':c===p&&c?'#4CAF87':'rgba(255,255,255,0.12)';
+    const msg=document.getElementById('reset-match-msg');
+    if(msg) msg.textContent=c&&c!==p?'Passwords do not match':'';
+  });
   setTimeout(()=>document.getElementById('reset-new-pass')?.focus(),50);
   return true;
 }
@@ -3948,25 +3959,35 @@ async function submitNewPassword(){
     showToast('Password must be at least 8 characters');return;
   }
   if(pass!==confirm){
-    document.getElementById('reset-confirm-pass').style.borderColor='var(--orange)';
+    document.getElementById('reset-confirm-pass').style.borderColor='#e05050';
+    const msg=document.getElementById('reset-match-msg');
+    if(msg) msg.textContent='Passwords do not match';
     showToast('Passwords do not match');return;
   }
+  const msg=document.getElementById('reset-match-msg');
+  if(msg) msg.textContent='';
   if(btn){btn.textContent='Updating...';btn.disabled=true;}
-  const{error}=await sb.auth.updateUser({password:pass});
+  const{data,error}=await sb.auth.updateUser({password:pass});
   if(error){
-    showToast(error.message);
+    showToast('Error: '+error.message);
+    console.error('Password update error:',error);
     if(btn){btn.textContent='Update password';btn.disabled=false;}
   } else {
+    console.log('Password updated successfully',data);
     document.getElementById('reset-modal').remove();
-    showToast('✓ Password updated! You are now signed in.');
-    // Session is now active — load the app
+    showToast('✓ Password updated! Signing you in...');
+    // Get fresh session
     const{data:{session}}=await sb.auth.getSession();
     if(session){
       currentUser=session.user;
       await loadProfile();
       document.getElementById('login-screen').style.display='none';
-      document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';
+      document.getElementById('app').style.display='block';
+      document.getElementById('app').style.opacity='1';
+      document.getElementById('app').style.pointerEvents='all';
       initApp();
+    } else {
+      showToast('Password updated — please sign in with your new password');
     }
   }
 }
