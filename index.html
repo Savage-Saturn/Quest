@@ -3970,6 +3970,8 @@ async function submitNewPassword(){
     }
   }
 }
+
+async function sendResetLink(){
   const email=document.getElementById('reset-email')?.value.trim();
   if(!email||!validEmail(email)){
     const el=document.getElementById('reset-email');
