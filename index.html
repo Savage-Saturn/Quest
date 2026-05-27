@@ -1432,12 +1432,12 @@ function showPopup(e){
       ${e.capacity?`<div class="sq-cap-row"><div class="sq-cap-bar"><div class="sq-cap-fill" style="width:${pct}%;background:${t.color}"></div></div><span>${left} spot${left!==1?'s':''} left</span></div>`:`<div style="font-size:11px;color:var(--warm);margin-bottom:10px">${e.joined} going</div>`}
       ${e.paid?`<div style="font-size:11px;color:var(--yellow);font-weight:600;margin-bottom:8px">💳 $${e.price}/person</div>`:''}
       <div class="sq-popup-actions">
-        <button class="sq-btn detail" onclick="event.stopPropagation();openDetail(${e.id})">Details</button>
+        <button class="sq-btn detail" onclick="event.stopPropagation();openDetail('${e.id}')">Details</button>
         ${e.userJoined
-          ? `<button class="sq-btn" onclick="event.stopPropagation();unjoinEvent(${e.id})" style="background:#555;color:#fff">Unjoin</button>`
-          : `<button class="sq-btn join" onclick="event.stopPropagation();quickJoin(${e.id})">Join ✦</button>`}
+          ? `<button class="sq-btn" onclick="event.stopPropagation();unjoinEvent('${e.id}')" style="background:#555;color:#fff">Unjoin</button>`
+          : `<button class="sq-btn join" onclick="event.stopPropagation();quickJoin('${e.id}')">Join ✦</button>`}
       </div>
-      <div class="maybe-btn-${e.id}" style="text-align:center;margin-top:6px"><button onclick="event.stopPropagation();maybeLater(${e.id})" style="background:none;border:none;font-size:11px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline">🤔 Maybe later</button></div>
+      <div class="maybe-btn-${e.id}" style="text-align:center;margin-top:6px"><button onclick="event.stopPropagation();maybeLater('${e.id}')" style="background:none;border:none;font-size:11px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline">🤔 Maybe later</button></div>
     </div>`)
     .addTo(map);
   activePopupId=e.id;activePopupOpen=true;selectedId=e.id;renderList();
@@ -1694,8 +1694,8 @@ function joinEvent(id){
   const e=events.find(x=>x.id===id);if(!e||e.userJoined)return;
   if(e.capacity&&e.joined>=e.capacity){showToast('😔 This quest is full!');return;}
   // flip button immediately before anything else
-  document.querySelectorAll(`[onclick*="quickJoin(${id})"]`).forEach(b=>{
-    b.textContent='Unjoin';b.setAttribute('onclick',`unjoinEvent(${id})`);
+  document.querySelectorAll(`[onclick*="quickJoin('${id}')"]`).forEach(b=>{
+    b.textContent='Unjoin';b.setAttribute('onclick',`unjoinEvent('${id}')`);
     b.style.cssText='background:#555;color:#fff;padding:5px 12px;border:none;border-radius:20px;font-size:11px;font-weight:600;font-family:Sora,sans-serif;cursor:pointer';
   });
   e.userJoined=true;e.joined++;
@@ -1717,8 +1717,8 @@ function quickJoin(id){joinEvent(id);}
 function unjoinEvent(id){
   const e=events.find(x=>x.id===id);if(!e||!e.userJoined)return;
   // flip button immediately before anything else
-  document.querySelectorAll(`[onclick*="unjoinEvent(${id})"]`).forEach(b=>{
-    b.textContent='Join ✦';b.setAttribute('onclick',`quickJoin(${id})`);
+  document.querySelectorAll(`[onclick*="unjoinEvent('${id}')"]`).forEach(b=>{
+    b.textContent='Join ✦';b.setAttribute('onclick',`quickJoin('${id}')`);
     b.style.cssText='background:var(--orange);color:#fff;padding:5px 12px;border:none;border-radius:20px;font-size:11px;font-weight:600;font-family:Sora,sans-serif;cursor:pointer';
   });
   e.userJoined=false;e.joined=Math.max(0,e.joined-1);
@@ -3322,7 +3322,7 @@ openDetail=function(id){
     document.getElementById('detail-footer').appendChild(cb);
   }
   const mb=document.getElementById('detail-maybe-btn');
-  if(mb){mb.style.display='block';mb.setAttribute('onclick',`maybeLater(${id})`);}
+  if(mb){mb.style.display='block';mb.setAttribute('onclick',`maybeLater('${id}')`);}
   const pn=document.getElementById('price-note');
   pn.style.display=ev.paid&&!ev.userJoined?'block':'none';
   if(ev.paid&&!ev.userJoined)pn.textContent='Secure payment via Quest \u00B7 Small platform fee applies';
