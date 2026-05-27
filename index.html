@@ -68,8 +68,7 @@ body.dark .toggle-slider{background:var(--border)}
 body.dark .detail-meta-item{background:var(--bg-input)}
 body.dark .mapboxgl-popup-content{background:var(--bg-surface)!important}
 html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:var(--cream);color:var(--brown)}
-#app{position:fixed;inset:0;z-index:1;pointer-events:none}
-#app>*{pointer-events:all}
+#app{position:relative;height:100vh;overflow:hidden}
 #sidebar{
   position:absolute;top:16px;left:16px;
   width:var(--sidebar-w);
@@ -158,7 +157,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
 .card-quick-join{padding:5px 12px;background:var(--orange);color:#fff;border:none;border-radius:20px;font-size:11px;font-weight:600;font-family:'Sora',sans-serif;cursor:pointer;transition:opacity 0.15s}
 .card-quick-join:hover{opacity:0.85}
 .card-quick-join:disabled{background:var(--green);opacity:1;cursor:default}
-#map{position:fixed;inset:0;z-index:0}
+#map{position:absolute;inset:0;z-index:0}
 #sidebar-close{display:none}
 #profile-btn{position:absolute;top:20px;right:20px;z-index:500;width:42px;height:42px;border-radius:50%;border:2px solid #fff;background:var(--orange);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;font-weight:700;color:#fff;box-shadow:0 3px 14px var(--shadow2);transition:transform 0.15s}
 #profile-btn:hover{transform:scale(1.07)}
@@ -744,8 +743,6 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
   </div>
 </div>
 
-<div id="map" style="position:fixed;inset:0;z-index:0"></div>
-
 <div id="app" style="display:none">
   <div id="sidebar">
     <div id="sidebar-header">
@@ -800,7 +797,7 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
     </div>
   </div>
 
-  <!-- map is rendered outside #app -->
+  <div id="map"></div>
 
   <div id="profile-btn" onclick="toggleProfile()">J<div id="notif-dot"></div></div>
   <div id="messages-btn" onclick="toggleMessagesPanel()">💬<div id="messages-unread-dot"></div></div>
@@ -1569,12 +1566,12 @@ function renderList(){
         <div class="bubbles">${bubbles}<span style="font-size:11px;color:var(--warm);margin-left:8px;align-self:center">${e.joined} going</span></div>
         ${e.userJoined
           ? `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-              <button class="card-quick-join" onclick="event.stopPropagation();unjoinEvent(${e.id})" style="background:#555">Unjoin</button>
-              <button class="maybe-btn-${e.id}" onclick="event.stopPropagation();maybeLater(${e.id})" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
+              <button class="card-quick-join" onclick="event.stopPropagation();unjoinEvent('${e.id}')" style="background:#555">Unjoin</button>
+              <button class="maybe-btn-${e.id}" onclick="event.stopPropagation();maybeLater('${e.id}')" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
              </div>`
           : `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-              <button class="card-quick-join" onclick="event.stopPropagation();quickJoin(${e.id})">Join</button>
-              <button class="maybe-btn-${e.id}" onclick="event.stopPropagation();maybeLater(${e.id})" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
+              <button class="card-quick-join" onclick="event.stopPropagation();quickJoin('${e.id}')">Join</button>
+              <button class="maybe-btn-${e.id}" onclick="event.stopPropagation();maybeLater('${e.id}')" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
              </div>`}
       </div>
     </div>`;
@@ -1597,8 +1594,8 @@ function renderMyQuests(){
         <div></div>
         ${e.userJoined&&!e.isMine
           ? `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-               <button class="card-quick-join" onclick="event.stopPropagation();unjoinEvent(${e.id})" style="background:#555">Unjoin</button>
-               <button onclick="event.stopPropagation();maybeLater(${e.id})" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
+               <button class="card-quick-join" onclick="event.stopPropagation();unjoinEvent('${e.id}')" style="background:#555">Unjoin</button>
+               <button onclick="event.stopPropagation();maybeLater('${e.id}')" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
              </div>`
           : e.userJoined&&e.isMine
           ? `<span class="joined-pill">Your Quest</span>`
@@ -1866,8 +1863,8 @@ function renderMaybe(){
       <div style="display:flex;gap:8px;margin-top:10px">
         <button onclick="event.stopPropagation();removeMaybe(${e.id})" style="flex:1;padding:7px 0;border-radius:10px;border:1px solid var(--border);background:var(--bg-surface);color:var(--warm);font-family:'Sora',sans-serif;font-size:12px;cursor:pointer;text-align:center;min-width:0">Remove</button>
         ${e.userJoined
-          ? `<button onclick="event.stopPropagation();unjoinEvent(${e.id})" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:#555;color:#fff;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:center;min-width:0">Unjoin</button>`
-          : `<button onclick="event.stopPropagation();quickJoin(${e.id})" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:var(--orange);color:#fff;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:center;min-width:0">Join ✦</button>`}
+          ? `<button onclick="event.stopPropagation();unjoinEvent('${e.id}')" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:#555;color:#fff;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:center;min-width:0">Unjoin</button>`
+          : `<button onclick="event.stopPropagation();quickJoin('${e.id}')" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:var(--orange);color:#fff;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:center;min-width:0">Join ✦</button>`}
       </div>
     </div>`;
   }).join('');
@@ -2224,7 +2221,7 @@ function renderMyPosts(){
           </div>`:''}
           <div style="display:flex;gap:8px">
             <button onclick="event.stopPropagation();openGroupChat(${e.id})" style="flex:1;padding:7px 0;border-radius:9px;border:1px solid var(--border);background:var(--bg-surface);color:var(--warm);font-family:'Sora',sans-serif;font-size:11px;font-weight:600;cursor:pointer">💬 Chat (${(chatMessages[e.id]||[]).filter(m=>!m.system).length})</button>
-            <button onclick="event.stopPropagation();openDetail(${e.id})" style="flex:1;padding:7px 0;border-radius:9px;border:none;background:${t.color}22;color:${t.color};font-family:'Sora',sans-serif;font-size:11px;font-weight:600;cursor:pointer">View details</button>
+            <button onclick="event.stopPropagation();openDetail('${e.id}')" style="flex:1;padding:7px 0;border-radius:9px;border:none;background:${t.color}22;color:${t.color};font-family:'Sora',sans-serif;font-size:11px;font-weight:600;cursor:pointer">View details</button>
           </div>
         </div>
       </div>
