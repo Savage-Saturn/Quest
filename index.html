@@ -4353,6 +4353,7 @@ async function loadAllData(){
   showToast('Loading Quests...');
   await Promise.all([loadEvents(),loadFriends(),loadNotifications(),loadMyPosts()]);
   renderList();renderMarkers();updateProfileStats();updateNotifBadge();
+  subscribeToRealtime();
 }
 
 async function loadMyPosts(){
@@ -4373,12 +4374,59 @@ async function loadMyPosts(){
 async function loadEvents(){
   try{
     const{data,error}=await sb.from('events_with_counts').select('*').eq('is_cancelled',false).order('starts_at',{ascending:true}).limit(50);
-    if(error)throw error;
+    if(error) throw error;
     const{data:myA}=await sb.from('event_attendees').select('event_id').eq('user_id',currentUser.id);
     const myJoinIds=(myA||[]).map(a=>a.event_id);
     events=(data||[]).map(r=>dbEventToLocal(r,myJoinIds));
     if(events.length===0) showToast('No Quests yet — post the first one!');
-  }catch(e){console.warn('loadEvents:',e.message);events=[];}
+  }catch(e){
+    console.warn('loadEvents via view failed:',e.message);
+    // Fallback: query events table directly
+    try{
+      const{data}=await sb.from('events').select('*,profiles(full_name)').eq('is_cancelled',false).order('starts_at',{ascending:true}).limit(50);
+      const{data:myA}=await sb.from('event_attendees').select('event_id').eq('user_id',currentUser.id);
+      const myJoinIds=(myA||[]).map(a=>a.event_id);
+      events=(data||[]).map(r=>({...dbEventToLocal(r,myJoinIds),hostName:r.profiles?.full_name||'Unknown'}));
+      if(events.length===0) showToast('No Quests yet — post the first one!');
+    }catch(e2){console.warn('loadEvents fallback failed:',e2.message);events=[];}
+  }
+}
+
+function subscribeToRealtime(){
+  if(!currentUser) return;
+  sb.channel('public-events')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'events'},payload=>{
+      const e=dbEventToLocal(payload.new,[]);
+      if(!events.find(x=>x.id===e.id)){
+        events.unshift(e);
+        renderList();renderMarkers();
+        if(e.host_id!==currentUser.id) showToast('📍 New Quest posted!');
+      }
+    })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'events'},payload=>{
+      const idx=events.findIndex(x=>x.id===payload.new.id);
+      if(idx>=0){const joined=events[idx].userJoined;events[idx]={...dbEventToLocal(payload.new,[]),userJoined:joined};renderList();}
+    })
+    .on('postgres_changes',{event:'DELETE',schema:'public',table:'events'},payload=>{
+      events=events.filter(x=>x.id!==payload.old.id);renderList();renderMarkers();
+    })
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'event_attendees'},payload=>{
+      const e=events.find(x=>x.id===payload.new.event_id);
+      if(e){e.joined++;renderList();}
+    })
+    .on('postgres_changes',{event:'DELETE',schema:'public',table:'event_attendees'},payload=>{
+      const e=events.find(x=>x.id===payload.old.event_id);
+      if(e){e.joined=Math.max(0,e.joined-1);renderList();}
+    })
+    .subscribe();
+
+  sb.channel('my-notifications')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:`user_id=eq.${currentUser.id}`},payload=>{
+      const n=payload.new;
+      notifications.unshift({id:n.id,type:n.type,icon:n.icon||'🔔',title:n.title,sub:n.body||'',time:'Just now',unread:true,eventId:n.related_event_id});
+      updateNotifBadge();renderNotifPanel();
+    })
+    .subscribe();
 }
 
 async function loadFriends(){
