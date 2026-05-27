@@ -157,7 +157,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
 .card-quick-join{padding:5px 12px;background:var(--orange);color:#fff;border:none;border-radius:20px;font-size:11px;font-weight:600;font-family:'Sora',sans-serif;cursor:pointer;transition:opacity 0.15s}
 .card-quick-join:hover{opacity:0.85}
 .card-quick-join:disabled{background:var(--green);opacity:1;cursor:default}
-#map{position:absolute;inset:0;z-index:0}
+#map{position:fixed;inset:0;z-index:0}
 #sidebar-close{display:none}
 #profile-btn{position:absolute;top:20px;right:20px;z-index:500;width:42px;height:42px;border-radius:50%;border:2px solid #fff;background:var(--orange);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;font-weight:700;color:#fff;box-shadow:0 3px 14px var(--shadow2);transition:transform 0.15s}
 #profile-btn:hover{transform:scale(1.07)}
@@ -741,6 +741,8 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
   </div>
 </div>
 
+<div id="map" style="position:fixed;inset:0;z-index:0"></div>
+
 <div id="app" style="display:none">
   <div id="sidebar">
     <div id="sidebar-header">
@@ -795,7 +797,7 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
     </div>
   </div>
 
-  <div id="map"></div>
+  <!-- map is rendered outside #app -->
 
   <div id="profile-btn" onclick="toggleProfile()">J<div id="notif-dot"></div></div>
   <div id="messages-btn" onclick="toggleMessagesPanel()">💬<div id="messages-unread-dot"></div></div>
@@ -2638,15 +2640,18 @@ document.addEventListener('DOMContentLoaded',()=>{
   const tbtnDark=document.getElementById('tbtn-dark');
   if(tbtnDark){tbtnDark.style.background='var(--orange)';tbtnDark.style.color='#000';tbtnDark.style.borderColor='var(--orange)';}
   if(tbtnLight){tbtnLight.style.background='var(--bg-surface)';tbtnLight.style.color='var(--warm)';tbtnLight.style.borderColor='var(--border)';}
+  // Init map immediately so it has proper dimensions (outside #app so always visible)
+  initMap();
   // Check for existing session — skip login if already signed in
   checkSession();
 });
 
 function initApp(){
-  // Called after login completes — safe to init map and request location
   document.getElementById('search-input').addEventListener('input',()=>{renderList();renderMarkers();});
-  initMap();
+  if(!window.map) initMap();
+  else setTimeout(()=>map.resize(),150);
   renderList();
+  loadAllData();
 }
 
 // Drag-to-scroll filter row with momentum - init after DOM ready
@@ -4163,7 +4168,7 @@ async function checkSession(){
     await loadProfile();
     document.getElementById('login-screen').style.display='none';
     document.getElementById('onboarding-screen').style.display='none';
-    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';
+    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';setTimeout(()=>{if(window.map)map.resize();},150);
     initApp();
     setTimeout(()=>locateMe(),1000);
   } else if(staySignedIn){
@@ -4221,7 +4226,7 @@ function finishOnboarding(){
   ob.style.transition='opacity 0.4s';
   setTimeout(()=>{
     ob.style.display='none';
-    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';
+    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';setTimeout(()=>{if(window.map)map.resize();},150);
     initApp(); // init map — no location request yet
   },400);
 }
