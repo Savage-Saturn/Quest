@@ -4283,21 +4283,26 @@ async function loadProfile(){
   }
 }
 
-// Handle Google OAuth redirect — fires when Supabase detects session from URL hash
+// Handle Google OAuth redirect — only for OAuth providers, not email/password
+let _oauthHandled = false;
 sb.auth.onAuthStateChange(async (event, session) => {
-  if((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && !currentUser){
-    currentUser = session.user;
-    const meta = currentUser.user_metadata || {};
-    const quickName = meta.full_name || meta.name || currentUser.email?.split('@')[0] || 'User';
-    setProfileName(quickName);
-    await loadProfile();
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('onboarding-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('app').style.opacity = '1';
-    setTimeout(() => { if(window.map) map.resize(); }, 150);
-    initApp();
-    setTimeout(() => locateMe(), 1000);
+  if(event === 'SIGNED_IN' && session && !currentUser && !_oauthHandled){
+    const provider = session.user?.app_metadata?.provider;
+    if(provider && provider !== 'email'){
+      _oauthHandled = true;
+      currentUser = session.user;
+      const meta = currentUser.user_metadata || {};
+      const quickName = meta.full_name || meta.name || currentUser.email?.split('@')[0] || 'User';
+      setProfileName(quickName);
+      await loadProfile();
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('onboarding-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('app').style.opacity = '1';
+      setTimeout(() => { if(window.map) map.resize(); }, 150);
+      initApp();
+      setTimeout(() => locateMe(), 1000);
+    }
   }
 });
 
