@@ -1526,14 +1526,32 @@ function qcSubmit(lng,lat){
   if(new Date(dtVal)<=new Date()){showToast('⏰ Event must be in the future!');return;}
   if(!cap){showToast('Set a group size!');document.getElementById('qc-cap')?.focus();return;}
   const dtStr=new Date(dtVal).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-  const newE={id:'local_'+Date.now(),type:qcSelectedType,types:[qcSelectedType],title,location:'📍 Map pin',lat,lng,dt:dtStr,dtRaw:new Date(dtVal).getTime(),desc,capacity:parseInt(cap),joined:1,attendees:[0],userJoined:true,isMine:true,paid:false,price:0,hostName:getMyName(),hostColor:getMyColor(),postedAt:Date.now()};
-  closeQC(); // removes qcMarker preview pin
-  events.unshift(newE);userStats.posted++;
-  renderList();renderMarkers();
-  showToast(`🎉 "${title}" is live!`);
-  setTimeout(()=>{selectedId=newE.id;showPopup(newE);},300);
-  // Save to Supabase
-  saveEventToDb(newE).then(saved=>{if(saved){newE.id=saved.id;newE.host_id=currentUser?.id;joinEventInDb(saved.id);}});
+  closeQC();
+  showToast('📍 Posting your Quest...');
+  try{
+    const{data,error}=await sb.from('events').insert({
+      host_id:currentUser.id,
+      title,description:desc,
+      event_type:qcSelectedType,event_types:[qcSelectedType],
+      location_name:'📍 Map pin',location_lat:lat,location_lng:lng,
+      starts_at:new Date(dtVal).toISOString(),
+      capacity:parseInt(cap),
+      is_paid:false,price:0
+    }).select().single();
+    if(error) throw error;
+    await sb.from('event_attendees').upsert({event_id:data.id,user_id:currentUser.id,rsvp:'going'});
+    userStats.posted++;
+    // Add locally immediately for the poster
+    const newE=dbEventToLocal({...data,host_name:getMyName(),attendee_count:1},[data.id]);
+    newE.isMine=true;newE.userJoined=true;
+    if(!events.find(x=>x.id===newE.id)) events.unshift(newE);
+    renderList();renderMarkers();
+    showToast(`🎉 "${title}" is live!`);
+    setTimeout(()=>{selectedId=newE.id;showPopup(newE);},300);
+  }catch(e){
+    console.error('qcSubmit error:',e);
+    showToast('Failed to post: '+e.message);
+  }
 }
 
 function getFiltered(){
@@ -2300,28 +2318,27 @@ function toggleLocationPrivacy(isPrivate){
     if(sub) sub.textContent='Hidden from everyone';
     if(track) track.style.background='var(--border)';
     if(thumb) thumb.style.transform='translateX(18px)';
-    // hide map marker
     if(userMapMarker) userMapMarker.getElement().style.opacity='0';
-    // hide from friends overlay
     if(friendsMapActive) toggleFriendsMapOverlay();
+    // Clear location from DB
+    if(currentUser) sb.from('profiles').update({location_lat:null,location_lng:null,location_updated_at:null}).eq('id',currentUser.id).then(()=>{});
     showToast('🔒 Your location is now private');
   } else {
     if(sub) sub.textContent='Visible to friends';
     if(track) track.style.background='var(--orange)';
     if(thumb) thumb.style.transform='translateX(0)';
-    // restore map marker if we have a position
     if(userMapMarker) userMapMarker.getElement().style.opacity='1';
+    // Save current location if we have it
+    if(userLat&&userLng) saveLocationToDb(userLng,userLat);
     showToast('📍 Your location is now visible to friends');
   }
 }
 function locateMe(){
   if(!navigator.geolocation)return;
-  // if we already have location, just fly there
   if(userLat!==null&&userLng!==null){
     map.flyTo({center:[userLng,userLat],zoom:14,duration:900});
     return;
   }
-  // first time — ask for permission and set up watcher
   navigator.geolocation.getCurrentPosition(pos=>{
     userLng=pos.coords.longitude;userLat=pos.coords.latitude;
     if(userMapMarker)userMapMarker.remove();
@@ -2334,12 +2351,94 @@ function locateMe(){
     userMapMarker=new mapboxgl.Marker({element:el,anchor:'center'}).setLngLat([userLng,userLat]).addTo(map);
     if(locationPrivate) userMapMarker.getElement().style.opacity='0';
     map.flyTo({center:[userLng,userLat],zoom:14,duration:1400});
-    // keep marker updated silently without re-asking
+    // Save initial location to Supabase
+    saveLocationToDb(userLng,userLat);
+    // Watch and save position updates
     navigator.geolocation.watchPosition(p=>{
       userLng=p.coords.longitude;userLat=p.coords.latitude;
       if(userMapMarker)userMapMarker.setLngLat([userLng,userLat]);
+      if(!locationPrivate) saveLocationToDb(userLng,userLat);
     },{enableHighAccuracy:true});
   },()=>showToast('📍 Location access denied'));
+}
+
+// Debounced save so we don't spam Supabase on every GPS tick
+let _locationSaveTimer=null;
+function saveLocationToDb(lng,lat){
+  if(!currentUser||locationPrivate) return;
+  clearTimeout(_locationSaveTimer);
+  _locationSaveTimer=setTimeout(async()=>{
+    try{
+      await sb.from('profiles').update({
+        location_lat:lat,
+        location_lng:lng,
+        location_updated_at:new Date().toISOString()
+      }).eq('id',currentUser.id);
+    }catch(e){console.warn('saveLocation:',e.message);}
+  },5000); // save at most every 5 seconds
+}
+
+// Friend location markers on the map (live)
+const friendLiveMarkers={};
+
+function subscribeFriendLocations(){
+  if(!currentUser) return;
+  sb.channel('friend-locations')
+    .on('postgres_changes',{
+      event:'UPDATE',
+      schema:'public',
+      table:'profiles'
+    },payload=>{
+      const uid=payload.new?.id;
+      if(!uid||uid===currentUser.id) return;
+      if(!friends.has(uid)) return;
+      if(!friendsMapActive) return;
+      const lat=payload.new.location_lat;
+      const lng=payload.new.location_lng;
+      if(!lat||!lng) return;
+      updateFriendMarker(uid, lng, lat, payload.new.full_name, payload.new.avatar_url);
+    })
+    .subscribe();
+}
+
+function updateFriendMarker(uid, lng, lat, name, avatarUrl){
+  if(friendLiveMarkers[uid]){
+    // Smoothly animate to new position
+    friendLiveMarkers[uid].setLngLat([lng,lat]);
+    return;
+  }
+  // Create new marker
+  const color=colorFromId(uid);
+  const el=document.createElement('div');
+  el.style.cssText=`width:36px;height:36px;border-radius:50%;background:${color};border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.4);transition:transform 0.3s`;
+  el.textContent=name?name[0].toUpperCase():'?';
+  if(avatarUrl){
+    el.style.backgroundImage=`url(${avatarUrl})`;
+    el.style.backgroundSize='cover';
+    el.style.backgroundPosition='center';
+    el.textContent='';
+  }
+  el.onclick=e=>{
+    e.stopPropagation();
+    showToast(`${name} · Updated ${timeAgo(new Date().toISOString())}`);
+  };
+  // Pulse ring
+  const wrap=document.createElement('div');
+  wrap.style.cssText='position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center';
+  const ring=document.createElement('div');
+  ring.style.cssText=`position:absolute;inset:-4px;border-radius:50%;border:2px solid ${color};opacity:0.5;animation:userPulse 2s ease-out infinite`;
+  wrap.appendChild(ring);
+  wrap.appendChild(el);
+  friendLiveMarkers[uid]=new mapboxgl.Marker({element:wrap,anchor:'center'})
+    .setLngLat([lng,lat])
+    .addTo(map);
+}
+
+function removeFriendMarker(uid){
+  if(friendLiveMarkers[uid]){
+    friendLiveMarkers[uid].remove();
+    delete friendLiveMarkers[uid];
+  }
 }
 
 const STEP_LABELS=['Type','Details','Location','Preview'];
@@ -3239,18 +3338,45 @@ function toggleFriendsMapOverlay(){
   friendsMapActive=!friendsMapActive;
   document.getElementById('friends-map-btn').classList.toggle('active',friendsMapActive);
   if(friendsMapActive){
+    // Remove old static markers
     friendMarkers.forEach(m=>m.remove());friendMarkers=[];
-    let shown=0;
-    friendLocations.forEach(fl=>{
-      const u=allUsers.find(x=>x.id===fl.id);if(!u||!friends.has(u.id))return;shown++;
-      const el=document.createElement('div');
-      el.style.cssText=`width:34px;height:34px;border-radius:50%;background:${u.color};border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.4)`;
-      el.textContent=u.name[0];el.onclick=e=>{e.stopPropagation();showToast(`${u.name}: ${fl.activity}`);};
-      friendMarkers.push(new mapboxgl.Marker({element:el,anchor:'center'}).setLngLat([fl.lng,fl.lat]).addTo(map));
-    });
-    showToast(shown?'👥 Showing friends on map':'Add friends to see them on the map!');
+    // Load friend positions from DB and show live markers
+    loadFriendLocations();
   } else {
-    friendMarkers.forEach(m=>m.remove());friendMarkers=[];showToast('Friends hidden');
+    // Remove all live markers
+    Object.keys(friendLiveMarkers).forEach(uid=>removeFriendMarker(uid));
+    friendMarkers.forEach(m=>m.remove());friendMarkers=[];
+    showToast('Friends hidden');
+  }
+}
+
+async function loadFriendLocations(){
+  if(!currentUser||!friends.size){
+    showToast('Add friends to see them on the map!');
+    return;
+  }
+  try{
+    const friendIds=[...friends];
+    const{data}=await sb.from('profiles')
+      .select('id,full_name,avatar_url,location_lat,location_lng,location_updated_at,is_public')
+      .in('id',friendIds)
+      .not('location_lat','is',null);
+    let shown=0;
+    (data||[]).forEach(u=>{
+      if(!u.location_lat||!u.location_lng) return;
+      // Only show if updated within last 2 hours
+      if(u.location_updated_at){
+        const age=Date.now()-new Date(u.location_updated_at).getTime();
+        if(age>2*3600000) return; // older than 2 hours — skip
+      }
+      updateFriendMarker(u.id,u.location_lng,u.location_lat,u.full_name,u.avatar_url);
+      shown++;
+    });
+    if(shown===0) showToast('No friends sharing location right now');
+    else showToast(`👥 Showing ${shown} friend${shown>1?'s':''} live on map`);
+  }catch(e){
+    console.warn('loadFriendLocations:',e.message);
+    showToast('Could not load friend locations');
   }
 }
 
@@ -4361,6 +4487,7 @@ async function loadAllData(){
   await Promise.all([loadEvents(),loadFriends(),loadNotifications(),loadMyPosts()]);
   renderList();renderMarkers();updateProfileStats();updateNotifBadge();
   subscribeToRealtime();
+  subscribeFriendLocations();
 }
 
 async function loadMyPosts(){
@@ -4402,20 +4529,42 @@ async function loadEvents(){
 function subscribeToRealtime(){
   if(!currentUser) return;
   sb.channel('public-events')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'events'},payload=>{
-      const e=dbEventToLocal(payload.new,[]);
-      if(!events.find(x=>x.id===e.id)){
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'events'},async payload=>{
+      // Skip if we already have this event (self-posted)
+      if(events.find(x=>x.id===payload.new.id)) return;
+      // Also skip local_ temp ids — they'll be replaced by the save callback
+      // Fetch full event from view to get host_name and attendee_count
+      try{
+        const{data}=await sb.from('events_with_counts').select('*').eq('id',payload.new.id).single();
+        if(!data) return;
+        const e=dbEventToLocal(data,[]);
+        if(events.find(x=>x.id===e.id)) return; // double-check after async
         events.unshift(e);
-        renderList();renderMarkers();
-        if(e.host_id!==currentUser.id) showToast('📍 New Quest posted!');
+        renderList();
+        renderMarkers();
+        if(payload.new.host_id!==currentUser.id) showToast(`📍 New Quest: "${payload.new.title}"`);
+      }catch(err){
+        // Fallback: use raw payload
+        const e=dbEventToLocal(payload.new,[]);
+        if(!events.find(x=>x.id===e.id)){
+          events.unshift(e);
+          renderList();renderMarkers();
+          if(payload.new.host_id!==currentUser.id) showToast(`📍 New Quest posted!`);
+        }
       }
     })
     .on('postgres_changes',{event:'UPDATE',schema:'public',table:'events'},payload=>{
       const idx=events.findIndex(x=>x.id===payload.new.id);
-      if(idx>=0){const joined=events[idx].userJoined;events[idx]={...dbEventToLocal(payload.new,[]),userJoined:joined};renderList();}
+      if(idx>=0){
+        const joined=events[idx].userJoined;
+        events[idx]={...dbEventToLocal(payload.new,[]),userJoined:joined};
+        renderList();
+        renderMarkers();
+      }
     })
     .on('postgres_changes',{event:'DELETE',schema:'public',table:'events'},payload=>{
-      events=events.filter(x=>x.id!==payload.old.id);renderList();renderMarkers();
+      events=events.filter(x=>x.id!==payload.old.id);
+      renderList();renderMarkers();
     })
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'event_attendees'},payload=>{
       const e=events.find(x=>x.id===payload.new.event_id);
@@ -4425,7 +4574,9 @@ function subscribeToRealtime(){
       const e=events.find(x=>x.id===payload.old.event_id);
       if(e){e.joined=Math.max(0,e.joined-1);renderList();}
     })
-    .subscribe();
+    .subscribe(status=>{
+      console.log('Realtime status:',status);
+    });
 
   sb.channel('my-notifications')
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:`user_id=eq.${currentUser.id}`},payload=>{
@@ -4550,15 +4701,47 @@ if(_origSubmitPost) window.submitPost=async function(){
 const _origSFR=window.sendFriendRequest;
 if(_origSFR) window.sendFriendRequest=function(uid){_origSFR(uid);sendFriendRequestToDb(uid);};
 
-// Patch submitEvent to persist
+// Patch submitEvent to save to DB and let realtime add it for everyone
 const _origSubmitEvent=window.submitEvent;
 if(_origSubmitEvent) window.submitEvent=async function(){
-  _origSubmitEvent();
-  // find the newest event (just added) and save it
-  const newest=events[0];
-  if(newest){
-    const saved=await saveEventToDb(newest);
-    if(saved){newest.id=saved.id;newest.host_id=currentUser?.id;joinEventInDb(saved.id);}
+  // Collect form data before closing
+  const title=document.getElementById('new-title')?.value.trim();
+  const loc=document.getElementById('new-location')?.value.trim();
+  const dtVal=document.getElementById('new-dt')?.value;
+  const cap=document.getElementById('new-cap')?.value;
+  const price=document.getElementById('new-price')?.value;
+  const desc=document.getElementById('new-desc')?.value.trim();
+  const primaryKey=[...newEventTypes][0];
+  const lat=pickedLat||37.6624+(Math.random()-0.5)*0.09;
+  const lng=pickedLng||-121.88+(Math.random()-0.5)*0.18;
+  // Save directly to Supabase — realtime will add it to everyone's map
+  closeCreate();
+  showToast('📍 Posting your Quest...');
+  try{
+    const{data,error}=await sb.from('events').insert({
+      host_id:currentUser.id,
+      title,description:desc||'',
+      event_type:primaryKey,event_types:[...newEventTypes],
+      location_name:loc,location_lat:lat,location_lng:lng,
+      starts_at:new Date(dtVal).toISOString(),
+      capacity:cap?parseInt(cap):null,
+      is_paid:!!price,price:price?parseFloat(price):0
+    }).select().single();
+    if(error) throw error;
+    // Join as attendee
+    await sb.from('event_attendees').upsert({event_id:data.id,user_id:currentUser.id,rsvp:'going'});
+    userStats.posted++;
+    // Realtime will pick it up and add to map/list for everyone
+    // But also add locally immediately so poster sees it instantly
+    const newE=dbEventToLocal({...data,host_name:getMyName(),attendee_count:1},[data.id]);
+    newE.isMine=true;newE.userJoined=true;
+    if(!events.find(x=>x.id===newE.id)) events.unshift(newE);
+    renderList();renderMarkers();
+    map.flyTo({center:[lng,lat],zoom:14,duration:1100,pitch:is3D?60:0});
+    setTimeout(()=>{selectedId=newE.id;showPopup(newE);showToast('🎉 Your Quest is live!');},1200);
+  }catch(e){
+    console.error('submitEvent error:',e);
+    showToast('Failed to post Quest: '+e.message);
   }
 };
 
