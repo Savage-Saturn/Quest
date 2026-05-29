@@ -68,9 +68,7 @@ body.dark .toggle-slider{background:var(--border)}
 body.dark .detail-meta-item{background:var(--bg-input)}
 body.dark .mapboxgl-popup-content{background:var(--bg-surface)!important}
 html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:var(--cream);color:var(--brown)}
-#app{position:fixed;inset:0;z-index:1;pointer-events:none}
-#app>*{pointer-events:none}
-#map,#sidebar,#profile-btn,#messages-btn,#notif-btn,#nearby-profiles-btn,#friends-map-btn,#map-buttons,#detail.open,#profile-panel.open,#messages-panel.open,#notif-panel.open,#nearby-profiles-panel.open,#premium-overlay,#create-sheet,#chat-panel,#detail-footer,#dm-panel.open,#friends-map-overlay,#push-notif-container,#map-notif{pointer-events:all}
+#app{position:relative;height:100vh;overflow:hidden}
 #sidebar{
   position:absolute;top:16px;left:16px;
   width:var(--sidebar-w);
@@ -159,7 +157,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
 .card-quick-join{padding:5px 12px;background:var(--orange);color:#fff;border:none;border-radius:20px;font-size:11px;font-weight:600;font-family:'Sora',sans-serif;cursor:pointer;transition:opacity 0.15s}
 .card-quick-join:hover{opacity:0.85}
 .card-quick-join:disabled{background:var(--green);opacity:1;cursor:default}
-#map{position:fixed;inset:0;z-index:0}
+#map{position:absolute;inset:0;z-index:0}
 #sidebar-close{display:none}
 #profile-btn{position:absolute;top:20px;right:20px;z-index:500;width:42px;height:42px;border-radius:50%;border:2px solid #fff;background:var(--orange);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;font-weight:700;color:#fff;box-shadow:0 3px 14px var(--shadow2);transition:transform 0.15s}
 #profile-btn:hover{transform:scale(1.07)}
@@ -176,6 +174,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
 #dm-panel{position:absolute;top:176px;right:20px;width:320px;max-height:calc(100vh - 200px);background:var(--bg-surface);z-index:700;transform:scale(0.92) translateY(-8px);transform-origin:top right;opacity:0;pointer-events:none;transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),opacity 0.2s;border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 32px var(--shadow2);display:flex;flex-direction:column;overflow:hidden}
 #dm-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
 #map-buttons{position:absolute;bottom:24px;left:20px;z-index:500;display:flex;flex-direction:row;gap:10px}
+#map-buttons.shifted{left:20px}
 #post-btn,#locate-btn,#btn-3d{width:63px;height:63px;border-radius:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;font-family:'Sora',sans-serif}
 #post-btn{background:var(--orange);border:none;font-size:33px;color:#fff;font-weight:700;box-shadow:0 3px 14px var(--shadow2)}
 #locate-btn{background:var(--bg-surface);border:1px solid var(--border);font-size:27px;box-shadow:0 2px 10px var(--shadow)}
@@ -209,8 +208,6 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
 .mapboxgl-popup-content{padding:0!important;border-radius:14px!important;box-shadow:0 6px 24px rgba(57,255,20,0.2)!important;border:1px solid var(--border)!important;background:var(--bg-surface)!important;overflow:hidden;font-family:'Sora',sans-serif!important;min-width:240px}
 .mapboxgl-popup-close-button{display:none!important}
 .mapboxgl-popup-tip{display:none!important}
-.mapboxgl-popup{pointer-events:none}
-.mapboxgl-popup-content{pointer-events:all}
 .sq-popup{padding:14px 16px}
 .sq-popup-title{font-size:14px;font-weight:700;color:var(--brown);margin-bottom:4px;line-height:1.3}
 .sq-popup-meta{font-size:11px;color:var(--warm);margin-bottom:9px;display:flex;flex-direction:column;gap:2px}
@@ -222,10 +219,10 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
 .sq-btn.detail{background:var(--cream);color:var(--brown);border:1px solid var(--border)}
 .sq-btn.join{background:var(--orange);color:#fff}
 .sq-btn.joined{background:var(--green);color:#fff;cursor:default}
-.qc-popup{padding:10px 12px;width:210px;box-sizing:border-box}
-.qc-popup h4{font-size:12px;font-weight:700;color:var(--brown);margin-bottom:7px}
+.qc-popup{padding:14px 16px;min-width:240px}
+.qc-popup h4{font-size:13px;font-weight:700;color:var(--brown);margin-bottom:10px}
 .qc-type-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
-.qc-type{padding:3px 7px;border:1px solid var(--border);border-radius:20px;font-size:10px;cursor:pointer;font-family:'Sora',sans-serif;transition:all 0.12s;color:var(--warm);background:var(--bg-surface)}
+.qc-type{padding:4px 9px;border:1px solid var(--border);border-radius:20px;font-size:11px;cursor:pointer;font-family:'Sora',sans-serif;transition:all 0.12s;color:var(--warm);background:var(--bg-surface)}
 .qc-type.sel{color:#fff;border-color:transparent}
 .qc-input{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:9px;font-family:'Sora',sans-serif;font-size:12px;color:var(--brown);outline:none;margin-bottom:8px;background:var(--bg-surface)}
 .qc-input:focus{border-color:var(--orange)}
@@ -301,9 +298,7 @@ html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:v
 #chat-panel{position:absolute;top:72px;right:20px;width:320px;max-height:calc(100vh - 100px);background:var(--bg-surface);z-index:700;transform:scale(0.92) translateY(-8px);transform-origin:top right;opacity:0;pointer-events:none;transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),opacity 0.2s;border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 32px var(--shadow2);display:flex;flex-direction:column;overflow:hidden}
 #chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
 .profile-top{padding:20px 16px;background:var(--cream);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.profile-avatar-lg{width:52px;height:52px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;cursor:pointer;position:relative;overflow:hidden;flex-shrink:0}
-.profile-avatar-lg:hover::after{content:'📷';position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;font-size:18px;border-radius:50%}
-.profile-avatar-lg img{width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0}
+.profile-avatar-lg{width:52px;height:52px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff}
 .profile-name{font-size:16px;font-weight:700;color:var(--brown)}
 .profile-sub{font-size:12px;color:var(--warm)}
 .profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border)}
@@ -558,27 +553,12 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 2px rgba(220,38,38,0.2)
 .pay-summary-row.total{font-weight:700;color:var(--brown);border-top:1px solid var(--border);padding-top:8px;margin-top:4px}
 .success-anim{font-size:64px;margin-bottom:12px;display:block;animation:badgePop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards}
 </style>
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script>
-const SUPABASE_URL = 'https://caqouwntxprdvinbavtl.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhcW91d250eHByZHZpbmJhdnRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NzcyNjUsImV4cCI6MjA5NTM1MzI2NX0.nCdi83EUAyPUOvyLUjCCAGJCC4YOyK5E_WcLvM_RsJ0';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-let currentUser = null;
-let currentProfile = null;
-</script>
 </head>
 <body>
 
 <!-- ═══════════════════════════════════════════════════
      LOGIN SCREEN
 ════════════════════════════════════════════════════ -->
-<script>
-// Run synchronously before anything renders — prevents login/onboarding flash
-if(localStorage.getItem('quest_stay_signed_in')==='true'){
-  document.write('<style>#login-screen,#onboarding-screen{display:none!important}#app{display:block!important;opacity:1!important}</style>');
-}
-</script>
 <div id="login-screen" style="
   position:fixed;inset:0;z-index:99999;
   background:linear-gradient(160deg,#1a0a0a 0%,#2a0e0e 40%,#0d1a2e 100%);
@@ -597,7 +577,7 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
   </div>
 
   <!-- auth card -->
-  <div id="login-card" style="width:100%;max-width:380px;animation:fadeSlideUp 0.7s 0.15s ease both">
+  <div id="login-card" style="width:100%;max-width:380px;animation:fadeSlideUp 0.7s 0.15s ease both;opacity:0">
     <!-- tabs -->
     <div id="auth-tabs" style="display:flex;background:rgba(255,255,255,0.06);border-radius:14px;padding:4px;margin-bottom:24px">
       <button onclick="switchAuthTab('signin')" id="tab-signin"
@@ -618,11 +598,7 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
           style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;transition:border-color 0.2s"
           onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
           onkeydown="if(event.key==='Enter')doLogin()"/>
-        <div style="text-align:right;margin-top:8px"><span style="font-size:12px;color:rgba(255,255,255,0.4);cursor:pointer" onclick="doForgotPassword()">Forgot password?</span></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-        <input type="checkbox" id="stay-signed-in" style="width:16px;height:16px;accent-color:var(--orange);cursor:pointer;flex-shrink:0"/>
-        <label for="stay-signed-in" style="font-size:13px;color:rgba(255,255,255,0.55);cursor:pointer;user-select:none">Stay signed in</label>
+        <div style="text-align:right;margin-top:8px"><span style="font-size:12px;color:rgba(255,255,255,0.4);cursor:pointer" onclick="showToast('🔑 Password reset email sent!')">Forgot password?</span></div>
       </div>
       <button onclick="doLogin()" id="login-btn"
         style="width:100%;padding:15px;border-radius:12px;border:none;background:var(--orange);color:#fff;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 20px rgba(220,38,38,0.4);margin-bottom:16px">
@@ -645,16 +621,10 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
           style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;transition:border-color 0.2s"
           onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"/>
       </div>
-      <div style="margin-bottom:14px">
+      <div style="margin-bottom:20px">
         <input id="signup-password" type="password" placeholder="Create password (min 8 chars)"
           style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;transition:border-color 0.2s"
           onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"/>
-      </div>
-      <div style="margin-bottom:20px">
-        <input id="signup-password-confirm" type="password" placeholder="Confirm password"
-          style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;transition:border-color 0.2s"
-          onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
-          onkeydown="if(event.key==='Enter')doSignup()"/>
       </div>
       <button onclick="doSignup()" id="signup-btn"
         style="width:100%;padding:15px;border-radius:12px;border:none;background:var(--orange);color:#fff;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 20px rgba(220,38,38,0.4);margin-bottom:16px">
@@ -745,9 +715,7 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
   </div>
 </div>
 
-<div id="map" style="position:fixed;inset:0;z-index:0"></div>
-
-<div id="app" style="display:none">
+<div id="app">
   <div id="sidebar">
     <div id="sidebar-header">
       <div class="logo" onclick="toggleSidebar()">
@@ -801,7 +769,7 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
     </div>
   </div>
 
-  <!-- map is rendered outside #app -->
+  <div id="map"></div>
 
   <div id="profile-btn" onclick="toggleProfile()">J<div id="notif-dot"></div></div>
   <div id="messages-btn" onclick="toggleMessagesPanel()">💬<div id="messages-unread-dot"></div></div>
@@ -933,7 +901,7 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
           <button onclick="goToPremiumPlan()" style="background:none;border:none;color:var(--orange);font-family:'Sora',sans-serif;font-size:13px;cursor:pointer;padding:16px 0 8px;display:flex;align-items:center;gap:4px">← Change plan</button>
           <div class="pay-summary" id="pay-summary"></div>
           <div style="display:flex;flex-direction:column;gap:12px">
-            <div><div class="pay-label">Name on card</div><input class="pay-input" id="pay-name" type="text" placeholder="Your name"/></div>
+            <div><div class="pay-label">Name on card</div><input class="pay-input" id="pay-name" type="text" placeholder="Jordan M."/></div>
             <div><div class="pay-label">Card number</div><input class="pay-input" id="pay-card" type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)"/></div>
             <div class="pay-row">
               <div><div class="pay-label">Expiry</div><input class="pay-input" id="pay-expiry" type="text" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)"/></div>
@@ -964,7 +932,7 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
 
   <div id="push-notif-container"></div>
   <div id="map-notif"></div>
-  <div id="map-buttons">
+  <div id="map-buttons" class="shifted">
     <button id="post-btn" onclick="openCreate()">＋</button>
     <button id="btn-3d" onclick="toggle3D()">3D</button>
     <button id="locate-btn" onclick="locateMe()">📍</button>
@@ -987,13 +955,9 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
   <div id="profile-panel">
     <button class="profile-close" onclick="closeProfile()">✕</button>
     <div class="profile-top">
-      <div class="profile-avatar-lg" id="profile-avatar-lg" style="position:relative;cursor:pointer">
-        <span id="profile-avatar-initial">S</span>
-        <label for="avatar-upload-input" style="position:absolute;inset:0;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;background:transparent;transition:background 0.2s" onmouseover="this.style.background='rgba(0,0,0,0.45)';this.textContent='📷'" onmouseout="this.style.background='transparent';this.textContent=''"></label>
-        <input type="file" id="avatar-upload-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)"/>
-      </div>
+      <div class="profile-avatar-lg">J</div>
       <div>
-        <div class="profile-name" id="profile-name-el">Loading...</div>
+        <div class="profile-name">Jordan M.</div>
         <div class="profile-sub">Pleasanton, CA · member since 2024</div>
       </div>
     </div>
@@ -1080,7 +1044,7 @@ if(localStorage.getItem('quest_stay_signed_in')==='true'){
       <div style="padding:0 16px 16px">
         <div style="height:14px"></div>
         <div style="font-size:13px;color:var(--orange);cursor:pointer;padding:6px 0;font-weight:600" onclick="openPremium()">💎 Upgrade to Premium ✨</div>
-        <div style="font-size:13px;color:var(--red);cursor:pointer;padding:6px 0" onclick="signOut()">Sign out</div>
+        <div style="font-size:13px;color:var(--red);cursor:pointer;padding:6px 0" onclick="closeProfile()">Sign out</div>
       </div>
     </div>
 
@@ -1210,8 +1174,8 @@ const TYPES={
 const ACOLORS=['#E8622A','#1D6FA4','#2D6A4F','#7B3FA0','#C0506A','#D4880A','#DC2626','#C0392B'];
 const NAMES=['Alex','Blake','Casey','Dana','Eli','Fern','Gabe','Hana','Ines','Jax','Kali','Leo'];
 
-let events=[]; //loaded from Supabase
-const _UNUSED_=[{id:1,type:'hangout',types:['hangout'],title:"Anyone want to go bowling tonight?",location:'Stoneridge Lanes, Pleasanton',lat:37.6624,lng:-121.8997,dt:'Tonight, 7:00 PM',dtRaw:Date.now()+3*3600000,desc:"Got an itch to bowl and nobody's free. Let's get a group of 6 and split a couple lanes. All skill levels welcome.",capacity:6,joined:3,attendees:[0,1,2],userJoined:false,paid:false,price:0,hostName:'Marcus T.',hostColor:'#E8622A',postedAt:Date.now()-1800000},
+let events=[
+  {id:1,type:'hangout',types:['hangout'],title:"Anyone want to go bowling tonight?",location:'Stoneridge Lanes, Pleasanton',lat:37.6624,lng:-121.8997,dt:'Tonight, 7:00 PM',dtRaw:Date.now()+3*3600000,desc:"Got an itch to bowl and nobody's free. Let's get a group of 6 and split a couple lanes. All skill levels welcome.",capacity:6,joined:3,attendees:[0,1,2],userJoined:false,paid:false,price:0,hostName:'Marcus T.',hostColor:'#E8622A',postedAt:Date.now()-1800000},
   {id:2,type:'food',types:['food'],title:'Trying the new ramen spot in Dublin',location:'Ramen Nagi, Dublin Blvd',lat:37.7021,lng:-121.9358,dt:'Sat, 1:00 PM',dtRaw:Date.now()+2*86400000,desc:"The new Ramen Nagi just opened. Let's get a group, get in line together, share all the toppings.",capacity:4,joined:2,attendees:[3,4],userJoined:false,paid:false,price:0,hostName:'Priya S.',hostColor:'#7B3FA0',postedAt:Date.now()-3600000},
   {id:3,type:'opening',types:['opening'],title:'Grand Opening — Salt & Honey Bakery',location:'Pleasanton Downtown',lat:37.6600,lng:-121.8763,dt:'Sat, 9:00 AM',dtRaw:Date.now()+1.5*86400000,desc:"Salt & Honey Bakery opens this Saturday! First 50 guests get a free pastry box.",capacity:null,joined:31,attendees:[0,1,2,3,4],userJoined:false,paid:false,price:0,hostName:'Salt & Honey',hostColor:'#D4880A',postedAt:Date.now()-7200000},
   {id:4,type:'outdoor',types:['outdoor'],title:'Morning hike @ Mission Peak',location:'Mission Peak, Fremont',lat:37.5156,lng:-121.8890,dt:'Sun, 7:00 AM',dtRaw:Date.now()+2.3*86400000,desc:"Early morning crew wanted for Mission Peak. Bring water and snacks. Breakfast after.",capacity:8,joined:5,attendees:[5,6,7],userJoined:false,paid:false,price:0,hostName:'Jamie K.',hostColor:'#2D6A4F',postedAt:Date.now()-10800000},
@@ -1436,105 +1400,52 @@ function showPopup(e){
       ${e.capacity?`<div class="sq-cap-row"><div class="sq-cap-bar"><div class="sq-cap-fill" style="width:${pct}%;background:${t.color}"></div></div><span>${left} spot${left!==1?'s':''} left</span></div>`:`<div style="font-size:11px;color:var(--warm);margin-bottom:10px">${e.joined} going</div>`}
       ${e.paid?`<div style="font-size:11px;color:var(--yellow);font-weight:600;margin-bottom:8px">💳 $${e.price}/person</div>`:''}
       <div class="sq-popup-actions">
-        <button class="sq-btn detail" onclick="event.stopPropagation();openDetail('${e.id}')">Details</button>
+        <button class="sq-btn detail" onclick="event.stopPropagation();openDetail(${e.id})">Details</button>
         ${e.userJoined
-          ? `<button class="sq-btn" onclick="event.stopPropagation();unjoinEvent('${e.id}')" style="background:#555;color:#fff">Unjoin</button>`
-          : `<button class="sq-btn join" onclick="event.stopPropagation();quickJoin('${e.id}')">Join ✦</button>`}
+          ? `<button class="sq-btn" onclick="event.stopPropagation();unjoinEvent(${e.id})" style="background:#555;color:#fff">Unjoin</button>`
+          : `<button class="sq-btn join" onclick="event.stopPropagation();quickJoin(${e.id})">Join ✦</button>`}
       </div>
-      <div class="maybe-btn-${e.id}" style="text-align:center;margin-top:6px"><button onclick="event.stopPropagation();maybeLater('${e.id}')" style="background:none;border:none;font-size:11px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline">🤔 Maybe later</button></div>
+      <div class="maybe-btn-${e.id}" style="text-align:center;margin-top:6px"><button onclick="event.stopPropagation();maybeLater(${e.id})" style="background:none;border:none;font-size:11px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline">🤔 Maybe later</button></div>
     </div>`)
     .addTo(map);
   activePopupId=e.id;activePopupOpen=true;selectedId=e.id;renderList();
 }
 
-let qcMarker=null; // live preview pin for quick create
-
 function openQuickCreate(lngLat){
   closeActivePopup();closeQC();qcSelectedType='hangout';
-
-  // Drop a live preview pin immediately
-  const t=TYPES['hangout'];
-  const el=document.createElement('div');
-  el.id='qc-live-pin';
-  el.style.cssText=`width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${t.color};border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer;transition:background 0.2s`;
-  el.innerHTML=`<span style="display:block;transform:rotate(45deg);text-align:center;line-height:22px;font-size:12px">${t.emoji}</span>`;
-  if(qcMarker) qcMarker.remove();
-  qcMarker=new mapboxgl.Marker({element:el,anchor:'bottom'}).setLngLat(lngLat).addTo(map);
-
-  const typeBtns=Object.entries(TYPES).map(([k,tv])=>
-    `<button class="qc-type${k==='hangout'?' sel':''}" style="${k==='hangout'?`background:${tv.color};color:#fff;`:''}" onclick="qcSelType('${k}',this,'${tv.color}','${tv.emoji}')">${tv.emoji} ${tv.label}</button>`
+  const typeBtns=Object.entries(TYPES).map(([k,t])=>
+    `<button class="qc-type${k==='hangout'?' sel':''}" style="${k==='hangout'?`background:${t.color};color:#fff;`:''}" onclick="qcSelType('${k}',this,'${t.color}')">${t.emoji} ${t.label}</button>`
   ).join('');
-
-  qcPopup=new mapboxgl.Popup({closeButton:false,closeOnClick:false,offset:10,maxWidth:'260px'})
+  qcPopup=new mapboxgl.Popup({closeButton:false,closeOnClick:true,offset:10,maxWidth:'320px'})
     .setLngLat(lngLat)
-    .setHTML(`<div class="qc-popup" style="width:230px;max-height:65vh;overflow-y:auto;scrollbar-width:thin">
-      <h4 style="font-size:12px;margin-bottom:7px">📍 New Quest here</h4>
-      <div class="qc-type-row" style="gap:4px;margin-bottom:8px">${typeBtns}</div>
-      <input class="qc-input" id="qc-title" type="text" placeholder="Quest name *" maxlength="80" style="width:100%;box-sizing:border-box;margin-bottom:5px;padding:8px 10px;font-size:12px"/>
-      <textarea id="qc-desc" placeholder="What to expect... *" maxlength="300" style="width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--bg-input);color:var(--brown);font-family:'Sora',sans-serif;font-size:12px;resize:none;outline:none;height:52px;box-sizing:border-box;margin-bottom:5px"></textarea>
-      <input id="qc-dt" type="datetime-local" style="width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--bg-input);color:var(--brown);font-family:'Sora',sans-serif;font-size:11px;outline:none;box-sizing:border-box;margin-bottom:5px"/>
-      <input id="qc-cap" type="number" min="2" max="500" placeholder="Max group size *" style="width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--bg-input);color:var(--brown);font-family:'Sora',sans-serif;font-size:12px;outline:none;box-sizing:border-box;margin-bottom:8px"/>
-      <div class="qc-actions" style="gap:5px">
-        <button class="qc-cancel" onclick="closeQC()" style="width:32px;height:32px;flex-shrink:0;font-size:12px;padding:0">✕</button>
-        <button class="qc-post" onclick="qcSubmit(${lngLat.lng},${lngLat.lat})" style="flex:1;padding:9px;font-size:12px">Post it ✦</button>
+    .setHTML(`<div class="qc-popup">
+      <h4>📍 New Quest here</h4>
+      <div class="qc-type-row">${typeBtns}</div>
+      <input class="qc-input" id="qc-title" type="text" placeholder="Give it a quick name..." maxlength="80"/>
+      <div class="qc-actions">
+        <button class="qc-cancel" onclick="closeQC()">✕</button>
+        <button class="qc-full" onclick="qcGoFull(${lngLat.lng},${lngLat.lat})">Full form →</button>
+        <button class="qc-post" onclick="qcSubmit(${lngLat.lng},${lngLat.lat})">Post it ✦</button>
       </div>
     </div>`)
     .addTo(map);
-
-  setTimeout(()=>{
-    const dtInput=document.getElementById('qc-dt');
-    if(dtInput){const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());dtInput.min=now.toISOString().slice(0,16);}
-    document.getElementById('qc-title')?.focus();
-  },100);
+  setTimeout(()=>document.getElementById('qc-title')?.focus(),100);
 }
-
-function qcSelType(k,el,color,emoji){
+function qcSelType(k,el,color){
   qcSelectedType=k;
   document.querySelectorAll('.qc-type').forEach(b=>{b.classList.remove('sel');b.style.background='';b.style.color='';});
   el.classList.add('sel');el.style.background=color;el.style.color='#fff';
-  // Update the live pin color and emoji
-  const pin=document.getElementById('qc-live-pin');
-  if(pin){
-    pin.style.background=color;
-    const span=pin.querySelector('span');
-    if(span) span.textContent=emoji||'📍';
-  }
 }
-
-function closeQC(){
-  if(qcPopup){qcPopup.remove();qcPopup=null;}
-  if(qcMarker){qcMarker.remove();qcMarker=null;}
-}
-
-function qcGoFull(lng,lat){
-  pickedLat=lat;pickedLng=lng;pickedLocationName='Map pin';
-  const title=document.getElementById('qc-title')?.value.trim()||'';
-  closeQC();openCreate();
-  createStep=2;newEventTypes=new Set([qcSelectedType]);renderStepUI();
-  if(title){const t=document.getElementById('new-title');if(t)t.value=title;}
-  const dtInput=document.getElementById('new-dt');
-  if(dtInput){const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());dtInput.min=now.toISOString().slice(0,16);}
-}
-
+function closeQC(){if(qcPopup){qcPopup.remove();qcPopup=null;}}
+function qcGoFull(lng,lat){closeQC();pickedLat=lat;pickedLng=lng;openCreate();}
 function qcSubmit(lng,lat){
   const title=document.getElementById('qc-title')?.value.trim();
-  const desc=document.getElementById('qc-desc')?.value.trim();
-  const dtVal=document.getElementById('qc-dt')?.value;
-  const cap=document.getElementById('qc-cap')?.value;
-  if(!title){showToast('Add a quest name!');document.getElementById('qc-title')?.focus();return;}
-  if(!desc){showToast('Add a description!');document.getElementById('qc-desc')?.focus();return;}
-  if(!dtVal){showToast('Pick a date and time!');document.getElementById('qc-dt')?.focus();return;}
-  if(new Date(dtVal)<=new Date()){showToast('⏰ Event must be in the future!');return;}
-  if(!cap){showToast('Set a group size!');document.getElementById('qc-cap')?.focus();return;}
-  const dtStr=new Date(dtVal).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-  const newE={id:'local_'+Date.now(),type:qcSelectedType,types:[qcSelectedType],title,location:'📍 Map pin',lat,lng,dt:dtStr,dtRaw:new Date(dtVal).getTime(),desc,capacity:parseInt(cap),joined:1,attendees:[0],userJoined:true,isMine:true,paid:false,price:0,hostName:getMyName(),hostColor:getMyColor(),postedAt:Date.now()};
-  closeQC(); // removes qcMarker preview pin
-  events.unshift(newE);userStats.posted++;
+  if(!title){showToast('Give it a name first!');return;}
+  const newE={id:Date.now(),type:qcSelectedType,types:[qcSelectedType],title,location:'See map pin',lat,lng,dt:'Soon',dtRaw:Date.now()+3600000,desc:'Posted via map pin.',capacity:null,joined:1,attendees:[0],userJoined:true,isMine:true,paid:false,price:0,hostName:'Jordan M.',hostColor:'#DC2626',postedAt:Date.now()};
+  closeQC();events.unshift(newE);userStats.posted++;
   renderList();renderMarkers();
   showToast(`🎉 "${title}" is live!`);
   setTimeout(()=>{selectedId=newE.id;showPopup(newE);},300);
-  // Save to Supabase
-  saveEventToDb(newE).then(saved=>{if(saved){newE.id=saved.id;newE.host_id=currentUser?.id;joinEventInDb(saved.id);}});
 }
 
 function getFiltered(){
@@ -1570,12 +1481,12 @@ function renderList(){
         <div class="bubbles">${bubbles}<span style="font-size:11px;color:var(--warm);margin-left:8px;align-self:center">${e.joined} going</span></div>
         ${e.userJoined
           ? `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-              <button class="card-quick-join" onclick="event.stopPropagation();unjoinEvent('${e.id}')" style="background:#555">Unjoin</button>
-              <button class="maybe-btn-${e.id}" onclick="event.stopPropagation();maybeLater('${e.id}')" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
+              <button class="card-quick-join" onclick="event.stopPropagation();unjoinEvent(${e.id})" style="background:#555">Unjoin</button>
+              <button class="maybe-btn-${e.id}" onclick="event.stopPropagation();maybeLater(${e.id})" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
              </div>`
           : `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-              <button class="card-quick-join" onclick="event.stopPropagation();quickJoin('${e.id}')">Join</button>
-              <button class="maybe-btn-${e.id}" onclick="event.stopPropagation();maybeLater('${e.id}')" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
+              <button class="card-quick-join" onclick="event.stopPropagation();quickJoin(${e.id})">Join</button>
+              <button class="maybe-btn-${e.id}" onclick="event.stopPropagation();maybeLater(${e.id})" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
              </div>`}
       </div>
     </div>`;
@@ -1598,8 +1509,8 @@ function renderMyQuests(){
         <div></div>
         ${e.userJoined&&!e.isMine
           ? `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-               <button class="card-quick-join" onclick="event.stopPropagation();unjoinEvent('${e.id}')" style="background:#555">Unjoin</button>
-               <button onclick="event.stopPropagation();maybeLater('${e.id}')" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
+               <button class="card-quick-join" onclick="event.stopPropagation();unjoinEvent(${e.id})" style="background:#555">Unjoin</button>
+               <button onclick="event.stopPropagation();maybeLater(${e.id})" style="background:none;border:none;font-size:10px;color:var(--warm);cursor:pointer;font-family:'Sora',sans-serif;text-decoration:underline;padding:0">🤔 Maybe later</button>
              </div>`
           : e.userJoined&&e.isMine
           ? `<span class="joined-pill">Your Quest</span>`
@@ -1680,7 +1591,7 @@ function openDetail(id){
   const maybeBtn=document.getElementById('detail-maybe-btn');
   if(maybeBtn){
     maybeBtn.style.display=e.userJoined?'none':'block';
-    maybeBtn.setAttribute('onclick',`maybeLater('${e.id}')`);
+    maybeBtn.setAttribute('onclick',`maybeLater(${e.id})`);
   }
   const priceNote=document.getElementById('price-note');
   priceNote.style.display=e.paid&&!e.userJoined?'block':'none';
@@ -1698,8 +1609,8 @@ function joinEvent(id){
   const e=events.find(x=>x.id===id);if(!e||e.userJoined)return;
   if(e.capacity&&e.joined>=e.capacity){showToast('😔 This quest is full!');return;}
   // flip button immediately before anything else
-  document.querySelectorAll(`[onclick*="quickJoin('${id}')"]`).forEach(b=>{
-    b.textContent='Unjoin';b.setAttribute('onclick',`unjoinEvent('${id}')`);
+  document.querySelectorAll(`[onclick*="quickJoin(${id})"]`).forEach(b=>{
+    b.textContent='Unjoin';b.setAttribute('onclick',`unjoinEvent(${id})`);
     b.style.cssText='background:#555;color:#fff;padding:5px 12px;border:none;border-radius:20px;font-size:11px;font-weight:600;font-family:Sora,sans-serif;cursor:pointer';
   });
   e.userJoined=true;e.joined++;
@@ -1721,8 +1632,8 @@ function quickJoin(id){joinEvent(id);}
 function unjoinEvent(id){
   const e=events.find(x=>x.id===id);if(!e||!e.userJoined)return;
   // flip button immediately before anything else
-  document.querySelectorAll(`[onclick*="unjoinEvent('${id}')"]`).forEach(b=>{
-    b.textContent='Join ✦';b.setAttribute('onclick',`quickJoin('${id}')`);
+  document.querySelectorAll(`[onclick*="unjoinEvent(${id})"]`).forEach(b=>{
+    b.textContent='Join ✦';b.setAttribute('onclick',`quickJoin(${id})`);
     b.style.cssText='background:var(--orange);color:#fff;padding:5px 12px;border:none;border-radius:20px;font-size:11px;font-weight:600;font-family:Sora,sans-serif;cursor:pointer';
   });
   e.userJoined=false;e.joined=Math.max(0,e.joined-1);
@@ -1813,11 +1724,11 @@ function refreshPopup(e){
       if(e.userJoined){
         joinBtn.textContent='Unjoin';joinBtn.className='sq-btn';
         joinBtn.style.background='#555';joinBtn.style.color='#fff';
-        joinBtn.setAttribute('onclick',`unjoinEvent('${e.id}')`);
+        joinBtn.setAttribute('onclick',`unjoinEvent(${e.id})`);
       } else {
         joinBtn.textContent='Join ✦';joinBtn.className='sq-btn join';
         joinBtn.style.background='';joinBtn.style.color='';
-        joinBtn.setAttribute('onclick',`quickJoin('${e.id}')`);
+        joinBtn.setAttribute('onclick',`quickJoin(${e.id})`);
       }
     }
   }
@@ -1867,8 +1778,8 @@ function renderMaybe(){
       <div style="display:flex;gap:8px;margin-top:10px">
         <button onclick="event.stopPropagation();removeMaybe(${e.id})" style="flex:1;padding:7px 0;border-radius:10px;border:1px solid var(--border);background:var(--bg-surface);color:var(--warm);font-family:'Sora',sans-serif;font-size:12px;cursor:pointer;text-align:center;min-width:0">Remove</button>
         ${e.userJoined
-          ? `<button onclick="event.stopPropagation();unjoinEvent('${e.id}')" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:#555;color:#fff;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:center;min-width:0">Unjoin</button>`
-          : `<button onclick="event.stopPropagation();quickJoin('${e.id}')" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:var(--orange);color:#fff;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:center;min-width:0">Join ✦</button>`}
+          ? `<button onclick="event.stopPropagation();unjoinEvent(${e.id})" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:#555;color:#fff;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:center;min-width:0">Unjoin</button>`
+          : `<button onclick="event.stopPropagation();quickJoin(${e.id})" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:var(--orange);color:#fff;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:center;min-width:0">Join ✦</button>`}
       </div>
     </div>`;
   }).join('');
@@ -1946,8 +1857,8 @@ let nearbyProfilesOpen=false;
 let socialTab='feed';
 let socialFeedLikes={};
 
-let nearbyUsers=[]; //loaded from Supabase
-const _UNUSED4_=[{uid:'u1',name:'Marcus T.',color:'#E8622A',handle:'marcus_t',isPublic:true,mutualFriends:2,distance:'0.3mi'},
+const nearbyUsers=[
+  {uid:'u1',name:'Marcus T.',color:'#E8622A',handle:'marcus_t',isPublic:true,mutualFriends:2,distance:'0.3mi'},
   {uid:'u2',name:'Priya S.',color:'#8B5CF6',handle:'priya_s',isPublic:true,mutualFriends:1,distance:'0.5mi'},
   {uid:'nb1',name:'Alex R.',color:'#1D6FA4',handle:'alex_r',isPublic:false,mutualFriends:0,distance:'0.6mi'},
   {uid:'u5',name:'Riley K.',color:'#F59E0B',handle:'riley_k',isPublic:true,mutualFriends:0,distance:'0.8mi'},
@@ -1955,8 +1866,8 @@ const _UNUSED4_=[{uid:'u1',name:'Marcus T.',color:'#E8622A',handle:'marcus_t',is
   {uid:'u6',name:'Sam W.',color:'#EC4899',handle:'sam_w',isPublic:true,mutualFriends:0,distance:'1.2mi'},
 ];
 
-let socialFeedPosts=[]; //loaded from Supabase
-const _UNUSED5_=[{uid:'u1',name:'Marcus T.',color:'#E8622A',handle:'marcus_t',isPublic:true,caption:'Great bowling night last night 🎳',time:'2h ago',likes:8},
+const socialFeedPosts=[
+  {uid:'u1',name:'Marcus T.',color:'#E8622A',handle:'marcus_t',isPublic:true,caption:'Great bowling night last night 🎳',time:'2h ago',likes:8},
   {uid:'u2',name:'Priya S.',color:'#8B5CF6',handle:'priya_s',isPublic:true,caption:'Finally tried that ramen spot — absolutely worth it 🍜',time:'4h ago',likes:14},
   {uid:'u5',name:'Riley K.',color:'#F59E0B',handle:'riley_k',isPublic:true,caption:'Morning coffee and a good view ☕',time:'6h ago',likes:6},
   {uid:'u6',name:'Sam W.',color:'#EC4899',handle:'sam_w',isPublic:true,caption:'Anyone else going to the open mic tonight?',time:'1d ago',likes:3},
@@ -2049,7 +1960,7 @@ function openNearbyUserProfile(uid,name,color,handle,isPublic){
   if(!canView){
     overlay.innerHTML=`
       <div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0">
-        <button onclick="event.stopPropagation();document.getElementById('social-profile-overlay').remove()" style="background:none;border:none;font-size:20px;color:var(--warm);cursor:pointer;padding:0;line-height:1">←</button>
+        <button onclick="document.getElementById('social-profile-overlay').remove()" style="background:none;border:none;font-size:20px;color:var(--warm);cursor:pointer;padding:0;line-height:1">←</button>
         <div style="font-size:14px;font-weight:700;color:var(--brown)">@${handle}</div>
       </div>
       <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;gap:12px">
@@ -2076,7 +1987,7 @@ function openNearbyUserProfile(uid,name,color,handle,isPublic){
           style="padding:8px 16px;border-radius:10px;border:none;background:var(--orange);color:#fff;font-family:\\'Sora\\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">+ Add friend</button>`;
     overlay.innerHTML=`
       <div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0">
-        <button onclick="event.stopPropagation();document.getElementById('social-profile-overlay').remove()" style="background:none;border:none;font-size:20px;color:var(--warm);cursor:pointer;padding:0;line-height:1">←</button>
+        <button onclick="document.getElementById('social-profile-overlay').remove()" style="background:none;border:none;font-size:20px;color:var(--warm);cursor:pointer;padding:0;line-height:1">←</button>
         <div style="font-size:14px;font-weight:700;color:var(--brown);flex:1">${name}</div>
       </div>
       <div style="flex:1;overflow-y:auto">
@@ -2225,7 +2136,7 @@ function renderMyPosts(){
           </div>`:''}
           <div style="display:flex;gap:8px">
             <button onclick="event.stopPropagation();openGroupChat(${e.id})" style="flex:1;padding:7px 0;border-radius:9px;border:1px solid var(--border);background:var(--bg-surface);color:var(--warm);font-family:'Sora',sans-serif;font-size:11px;font-weight:600;cursor:pointer">💬 Chat (${(chatMessages[e.id]||[]).filter(m=>!m.system).length})</button>
-            <button onclick="event.stopPropagation();openDetail('${e.id}')" style="flex:1;padding:7px 0;border-radius:9px;border:none;background:${t.color}22;color:${t.color};font-family:'Sora',sans-serif;font-size:11px;font-weight:600;cursor:pointer">View details</button>
+            <button onclick="event.stopPropagation();openDetail(${e.id})" style="flex:1;padding:7px 0;border-radius:9px;border:none;background:${t.color}22;color:${t.color};font-family:'Sora',sans-serif;font-size:11px;font-weight:600;cursor:pointer">View details</button>
           </div>
         </div>
       </div>
@@ -2620,7 +2531,7 @@ function submitEvent(){
   const primaryKey=[...newEventTypes][0];
   const lat=pickedLat||37.6624+(Math.random()-0.5)*0.09;
   const lng=pickedLng||-121.88+(Math.random()-0.5)*0.18;
-  const newE={id:Date.now(),type:primaryKey,types:[...newEventTypes],title,location:loc,lat,lng,dt:dtStr,dtRaw:dtVal?new Date(dtVal).getTime():Date.now()+3600000,desc:desc||'No description yet.',capacity:cap?parseInt(cap):null,joined:1,attendees:[0],userJoined:true,isMine:true,paid:!!price,price:price?parseFloat(price):0,hostName:getMyName(),hostColor:getMyColor(),postedAt:Date.now()};
+  const newE={id:Date.now(),type:primaryKey,types:[...newEventTypes],title,location:loc,lat,lng,dt:dtStr,dtRaw:dtVal?new Date(dtVal).getTime():Date.now()+3600000,desc:desc||'No description yet.',capacity:cap?parseInt(cap):null,joined:1,attendees:[0],userJoined:true,isMine:true,paid:!!price,price:price?parseFloat(price):0,hostName:'Jordan M.',hostColor:'#DC2626',postedAt:Date.now()};
   events.unshift(newE);userStats.posted++;
   closeCreate();renderList();renderMarkers();
   map.flyTo({center:[lng,lat],zoom:14,duration:1100,pitch:is3D?60:0});
@@ -2638,20 +2549,20 @@ function overlayClose(e){if(e.target.id==='create-overlay')closeCreate();}
 document.addEventListener('DOMContentLoaded',()=>{
   document.body.classList.add('dark');
   document.body.classList.remove('light');
+  // DO NOT init map or request location here — wait until after login
   sidebarOpen=true;
   document.getElementById('map-buttons').classList.add('shifted');
   const tbtnLight=document.getElementById('tbtn-light');
   const tbtnDark=document.getElementById('tbtn-dark');
   if(tbtnDark){tbtnDark.style.background='var(--orange)';tbtnDark.style.color='#000';tbtnDark.style.borderColor='var(--orange)';}
   if(tbtnLight){tbtnLight.style.background='var(--bg-surface)';tbtnLight.style.color='var(--warm)';tbtnLight.style.borderColor='var(--border)';}
-  checkSession();
 });
 
 function initApp(){
+  // Called after login completes — safe to init map and request location
   document.getElementById('search-input').addEventListener('input',()=>{renderList();renderMarkers();});
   initMap();
   renderList();
-  loadAllData();
 }
 
 // Drag-to-scroll filter row with momentum - init after DOM ready
@@ -2715,8 +2626,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 // ── FRIENDS SYSTEM ──
-let allUsers=[]; //loaded from Supabase
-const _UNUSED2_=[{id:'u1',name:'Marcus T.',color:'#E8622A',joined:[1,2]},
+const allUsers=[
+  {id:'u1',name:'Marcus T.',color:'#E8622A',joined:[1,2]},
   {id:'u2',name:'Priya S.',color:'#8B5CF6',joined:[2,3]},
   {id:'u3',name:'Aiko L.',color:'#0EA5E9',joined:[1,4]},
   {id:'u4',name:'Devon R.',color:'#10B981',joined:[3,5]},
@@ -2943,7 +2854,7 @@ function openMsgConvo(type,id){
     iconEl.textContent=ty.emoji;titleEl.textContent=ev.title;
     subEl.textContent=`${ev.joined} members`;subEl.style.cursor='pointer';subEl.onclick=()=>showChatMembers(id);
     leaveEl.innerHTML=`<button onclick="leaveMsgConvo(${id})" style="display:block;width:calc(100% - 24px);margin:0 12px 10px;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg-surface);color:#E84040;font-family:Sora,sans-serif;font-size:12px;font-weight:600;cursor:pointer">Leave chat</button>`;
-    if(!chatMessages[id])chatMessages[id]=[{name:ev.hostName,color:ev.hostColor,text:`Hey everyone! Excited for ${ev.title} \uD83C\uDF89`,time:'Just now'},{name:'Priya S.',color:'#8B5CF6',text:'Count me in! \uD83D\uDE4C',time:'Just now'},{system:true,text:`${getMyName()} joined the chat`}];
+    if(!chatMessages[id])chatMessages[id]=[{name:ev.hostName,color:ev.hostColor,text:`Hey everyone! Excited for ${ev.title} \uD83C\uDF89`,time:'Just now'},{name:'Priya S.',color:'#8B5CF6',text:'Count me in! \uD83D\uDE4C',time:'Just now'},{system:true,text:'Jordan M. joined the chat'}];
   } else {
     const u=allUsers.find(x=>x.id===id);if(!u)return;
     if(!dmMessages[id])dmMessages[id]=[];
@@ -3023,7 +2934,7 @@ function renderMsgConvoMessages(){
   c.scrollTop=c.scrollHeight;
 }
 function leaveMsgConvo(id){
-  if(chatMessages[id])chatMessages[id].push({system:true,text:`${getMyName()} left the chat`});
+  if(chatMessages[id])chatMessages[id].push({system:true,text:'Jordan M. left the chat'});
   delete chatMessages[id];closeMsgConvo();showToast('\uD83D\uDC4B You left the group chat');
 }
 // Stubs so original code that calls old functions still works
@@ -3045,8 +2956,8 @@ let activeDmId=null;
 // ─── NOTIFICATIONS ───────────────────────────────────────
 let notifPanelOpen=false;
 let notifsEnabled=false; // set during onboarding
-let notifications=[]; //loaded from Supabase
-const _UNUSED3_=[{id:'n1',type:'join',icon:'\uD83C\uDF89',title:'Marcus T. joined your Quest',sub:'Anyone want to go bowling tonight?',time:'2m ago',unread:true,eventId:1},
+const notifications=[
+  {id:'n1',type:'join',icon:'\uD83C\uDF89',title:'Marcus T. joined your Quest',sub:'Anyone want to go bowling tonight?',time:'2m ago',unread:true,eventId:1},
   {id:'n2',type:'chat',icon:'\uD83D\uDCAC',title:'New message in Pickleball group',sub:'Derek W.: "Anyone bringing extra paddles?"',time:'8m ago',unread:true,eventId:6},
   {id:'n3',type:'friend',icon:'\uD83E\uDD1D',title:'Priya S. accepted your request',sub:'You can now DM each other',time:'15m ago',unread:true},
   {id:'n4',type:'reminder',icon:'\u23F0',title:'Happening soon: Open mic night',sub:'Tonight at 8:00 PM \u00B7 The Barn',time:'1h ago',unread:false,eventId:5},
@@ -3200,21 +3111,28 @@ function setRSVP(eventId,status){
 }
 
 // ─── COMMENTS ────────────────────────────────────────────
-const eventComments={}; // populated from Supabase per event
+const eventComments={
+  1:[{name:'Marcus T.',color:'#E8622A',text:'Lanes 3 and 4 are reserved! Getting there by 6:45.',time:'1h ago'},{name:'Riley K.',color:'#F59E0B',text:'Do they serve food?',time:'45m ago'},{name:'Marcus T.',color:'#E8622A',text:'Yeah they have a snack bar and full bar!',time:'40m ago'}],
+  4:[{name:'Jamie K.',color:'#2D6A4F',text:'Meet at the trailhead parking lot, not the visitor center.',time:'3h ago'}],
+  9:[{name:'East Bay Paddles',color:'#2D6A4F',text:'Rentals include life jacket and paddle. Bring sunscreen!',time:'5h ago'}],
+};
 function postComment(eventId){
   const inp=document.getElementById('comment-input-'+eventId);if(!inp)return;
   const text=inp.value.trim();if(!text)return;
   if(!eventComments[eventId])eventComments[eventId]=[];
-  eventComments[eventId].push({name:getMyName(),color:getMyColor(),text,time:'Just now'});
+  eventComments[eventId].push({name:'Jordan M.',color:'#DC2626',text,time:'Just now'});
   inp.value='';inp.style.height='auto';
   const c=document.getElementById('comments-list-'+eventId);
   if(c)c.innerHTML=eventComments[eventId].map(cm=>`<div class="comment-item"><div class="comment-avatar" style="background:${cm.color}">${cm.name[0]}</div><div><div class="comment-meta">${cm.name} \u00B7 ${cm.time}</div><div class="comment-text">${cm.text}</div></div></div>`).join('');
   showToast('\uD83D\uDCAC Comment posted!');
-  // Persist to Supabase
-  if(currentUser) sb.from('event_comments').insert({event_id:eventId,user_id:currentUser.id,content:text}).then(({error})=>{if(error)console.warn('comment save:',error.message);});
 }
 
-// Recurring labels come from the DB (ev.recurringLabel is set in dbEventToLocal)
+// ─── COUNTDOWN + RECURRING ───────────────────────────────
+events.forEach(ev=>{
+  if(ev.id===8){ev.recurring='weekly';ev.recurringLabel='Every Thursday';}
+  if(ev.id===7){ev.recurring='weekly';ev.recurringLabel='Every Saturday';}
+  if(ev.id===5){ev.recurring='monthly';ev.recurringLabel='First Friday monthly';}
+});
 function getCountdown(dtRaw){
   const diff=dtRaw-Date.now();if(diff<0)return null;
   const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);
@@ -3226,8 +3144,7 @@ function getCountdown(dtRaw){
 // ─── NEARBY FRIENDS MAP ───────────────────────────────────
 let friendsMapActive=false;
 let friendMarkers=[];
-let friendLocations=[]; //loaded from Supabase
-const _UNUSED6_=[{id:'u1',lat:37.668,lng:-121.895,activity:'Near bowling alley'},{id:'u2',lat:37.702,lng:-121.933,activity:'Near Ramen Nagi'},{id:'u5',lat:37.660,lng:-121.876,activity:'Downtown Pleasanton'}];
+const friendLocations=[{id:'u1',lat:37.668,lng:-121.895,activity:'Near bowling alley'},{id:'u2',lat:37.702,lng:-121.933,activity:'Near Ramen Nagi'},{id:'u5',lat:37.660,lng:-121.876,activity:'Downtown Pleasanton'}];
 function toggleFriendsMapOverlay(){
   if(!friendsMapActive && locationPrivate){
     showToast('🔒 Enable location sharing in your profile first');
@@ -3322,7 +3239,7 @@ openDetail=function(id){
     document.getElementById('detail-footer').appendChild(cb);
   }
   const mb=document.getElementById('detail-maybe-btn');
-  if(mb){mb.style.display='block';mb.setAttribute('onclick',`maybeLater('${id}')`);}
+  if(mb){mb.style.display='block';mb.setAttribute('onclick',`maybeLater(${id})`);}
   const pn=document.getElementById('price-note');
   pn.style.display=ev.paid&&!ev.userJoined?'block':'none';
   if(ev.paid&&!ev.userJoined)pn.textContent='Secure payment via Quest \u00B7 Small platform fee applies';
@@ -3333,16 +3250,6 @@ function switchDetailTab(tab,eventId,btn){
   btn.classList.add('active');
   const ev=events.find(x=>x.id===eventId);
   document.getElementById('detail-tab-content').innerHTML=getDetailTabHTML(ev,tab);
-  // Load real comments from Supabase when comments tab opens
-  if(tab==='comments' && currentUser){
-    sb.from('event_comments').select('content,created_at,profiles(full_name)').eq('event_id',eventId).order('created_at',{ascending:true}).then(({data})=>{
-      if(data&&data.length){
-        eventComments[eventId]=data.map(c=>({name:c.profiles?.full_name||'User',color:colorFromId(c.profiles?.full_name||''),text:c.content,time:timeAgo(c.created_at)}));
-        const list=document.getElementById('comments-list-'+eventId);
-        if(list) list.innerHTML=eventComments[eventId].map(cm=>`<div class="comment-item"><div class="comment-avatar" style="background:${cm.color}">${cm.name[0]}</div><div><div class="comment-meta">${cm.name} · ${cm.time}</div><div class="comment-text">${cm.text}</div></div></div>`).join('');
-      }
-    }).catch(e=>console.warn('load comments:',e.message));
-  }
 }
 function getDetailTabHTML(ev,tab){
   const ty=TYPES[ev.type]||TYPES.hangout;
@@ -3607,7 +3514,11 @@ function switchProfileTab(tab) {
 let postsPublic = true;
 let pendingMedia = null; // {url, type: 'image'|'video'}
 
-let userPosts = []; // loaded from Supabase in loadMyPosts()
+const userPosts = [
+  {id:'p1', caption:'Great night at bowling! 🎳', mediaUrl:null, mediaType:null, privacy:'public', time:'2h ago', likes:4, liked:false, comments:['Marcus T.: So fun! 🎳','Riley K.: Next time invite me!']},
+  {id:'p2', caption:'Morning hike views at Mission Peak 🌅', mediaUrl:null, mediaType:null, privacy:'public', time:'3d ago', likes:12, liked:false, comments:['Aiko L.: Stunning!']},
+  {id:'p3', caption:'Quick note to self 📝', mediaUrl:null, mediaType:null, privacy:'private', time:'5d ago', likes:0, liked:false, comments:[]},
+];
 
 function togglePostsVisibility(isPublic) {
   postsPublic = isPublic;
@@ -3764,8 +3675,6 @@ document.addEventListener('DOMContentLoaded',()=>{
       const panelEl = document.getElementById(panel);
       const btnEl   = document.getElementById(btn);
       if (!panelEl || !panelEl.classList.contains('open')) return;
-      // if a profile overlay is active inside this panel, don't close on outside click
-      if (panelEl.querySelector('#social-profile-overlay')) return;
       // if click was inside the panel or on the trigger button, do nothing
       if (panelEl.contains(ev.target) || (btnEl && btnEl.contains(ev.target))) return;
       close();
@@ -3851,339 +3760,42 @@ function switchAuthTab(tab){
 }
 
 function validEmail(e){
+  // Basic format check
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)) return false;
-  const typos=['con','cmo','ocm','comm','comn','cpm','vom','xom','cob','cok','col'];
+  // Common TLD typo list
+  const typos=['con','cmo','ocm','con','comm','comn','cpm','vom','xom','cob','cok','col'];
   const tld=e.split('.').pop().toLowerCase();
   if(typos.includes(tld)) return false;
   return true;
 }
 
-async function doLogin(){
+function doLogin(){
   const btn=document.getElementById('login-btn');
   const email=document.getElementById('login-email').value.trim();
   const pass=document.getElementById('login-password').value;
   if(!email||!validEmail(email)){shakeInput('login-email');showToast('Enter a valid email address');return;}
   if(!pass){shakeInput('login-password');showToast('Enter your password');return;}
   btn.textContent='Signing in...';btn.disabled=true;
-  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
-  if(error){
-    btn.textContent='Sign in →';btn.disabled=false;
-    shakeInput('login-email');shakeInput('login-password');
-    showToast(error.message==='Invalid login credentials'?'Wrong email or password':error.message);
-    return;
-  }
-  if(document.getElementById('stay-signed-in')?.checked) localStorage.setItem('quest_stay_signed_in','true');
-  currentUser=data.user;
-  const qn=data.user.email?.split('@')[0]||'User';
-  window._myName=qn;window._myInitial=qn[0].toUpperCase();
-  document.querySelectorAll('.profile-name').forEach(el=>el.textContent=qn);
-  document.querySelectorAll('.profile-avatar-lg').forEach(el=>el.textContent=qn[0].toUpperCase());
-  await loadProfile();
-  showOnboarding();
+  setTimeout(()=>showOnboarding(),1200);
 }
 
-async function doForgotPassword(){
-  // Show a small modal overlay for password reset
-  const existing=document.getElementById('forgot-modal');
-  if(existing) existing.remove();
-
-  const modal=document.createElement('div');
-  modal.id='forgot-modal';
-  modal.style.cssText='position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);padding:24px';
-  modal.innerHTML=`
-    <div style="background:#1a0a0a;border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:28px 24px;width:100%;max-width:360px;font-family:'Sora',sans-serif">
-      <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:6px">Reset your password</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:20px">Enter your email and we'll send you a reset link.</div>
-      <input id="reset-email" type="email" placeholder="Your email address"
-        style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:14px"/>
-      <button id="forgot-send-btn"
-        style="width:100%;padding:14px;border-radius:12px;border:none;background:var(--orange);color:#fff;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px">
-        Send reset link
-      </button>
-      <button id="forgot-cancel-btn"
-        style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:rgba(255,255,255,0.45);font-family:'Sora',sans-serif;font-size:13px;cursor:pointer">
-        Cancel
-      </button>
-    </div>`;
-  document.body.appendChild(modal);
-  document.getElementById('forgot-send-btn').addEventListener('click', sendResetLink);
-  document.getElementById('forgot-cancel-btn').addEventListener('click', ()=>modal.remove());
-  document.getElementById('reset-email').addEventListener('keydown', e=>{if(e.key==='Enter')sendResetLink();});
-  setTimeout(()=>document.getElementById('reset-email')?.focus(),50);
-}
-
-// Check for password reset redirect (Supabase sends #type=recovery in URL)
-async function checkPasswordReset(){
-  const hash=window.location.hash;
-  if(!hash.includes('type=recovery')) return false;
-
-  // Clear the hash from URL
-  history.replaceState(null,'',window.location.pathname);
-
-  // Show reset password form
-  const modal=document.createElement('div');
-  modal.id='reset-modal';
-  modal.style.cssText='position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);padding:24px';
-  modal.innerHTML=`
-    <div style="background:#1a0a0a;border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:28px 24px;width:100%;max-width:360px;font-family:'Sora',sans-serif">
-      <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:6px">Set new password</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:20px">Choose a strong password for your account.</div>
-      <input id="reset-new-pass" type="password" placeholder="New password (min 8 chars)"
-        style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:12px"/>
-      <input id="reset-confirm-pass" type="password" placeholder="Confirm new password"
-        style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-family:'Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:6px"/>
-      <div id="reset-match-msg" style="font-size:12px;margin-bottom:12px;min-height:16px;color:#e05050"></div>
-      <button id="reset-submit-btn"
-        style="width:100%;padding:14px;border-radius:12px;border:none;background:var(--orange);color:#fff;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer">
-        Update password
-      </button>
-    </div>`;
-  document.body.appendChild(modal);
-  document.getElementById('reset-submit-btn').addEventListener('click', submitNewPassword);
-  document.getElementById('reset-new-pass').addEventListener('keydown', e=>{if(e.key==='Enter')submitNewPassword();});
-  document.getElementById('reset-confirm-pass').addEventListener('keydown', e=>{if(e.key==='Enter')submitNewPassword();});
-  document.getElementById('reset-confirm-pass').addEventListener('input', ()=>{
-    const p=document.getElementById('reset-new-pass').value;
-    const c=document.getElementById('reset-confirm-pass').value;
-    document.getElementById('reset-confirm-pass').style.borderColor=c&&c!==p?'#e05050':c===p&&c?'#4CAF87':'rgba(255,255,255,0.12)';
-    const msg=document.getElementById('reset-match-msg');
-    if(msg) msg.textContent=c&&c!==p?'Passwords do not match':'';
-  });
-  setTimeout(()=>document.getElementById('reset-new-pass')?.focus(),50);
-  return true;
-}
-
-async function submitNewPassword(){
-  const pass=document.getElementById('reset-new-pass')?.value;
-  const confirm=document.getElementById('reset-confirm-pass')?.value;
-  const btn=document.getElementById('reset-submit-btn');
-  if(!pass||pass.length<8){
-    document.getElementById('reset-new-pass').style.borderColor='var(--orange)';
-    showToast('Password must be at least 8 characters');return;
-  }
-  if(pass!==confirm){
-    document.getElementById('reset-confirm-pass').style.borderColor='#e05050';
-    const msg=document.getElementById('reset-match-msg');
-    if(msg) msg.textContent='Passwords do not match';
-    showToast('Passwords do not match');return;
-  }
-  const msg=document.getElementById('reset-match-msg');
-  if(msg) msg.textContent='';
-  if(btn){btn.textContent='Updating...';btn.disabled=true;}
-  const{data,error}=await sb.auth.updateUser({password:pass});
-  if(error){
-    showToast('Error: '+error.message);
-    console.error('Password update error:',error);
-    if(btn){btn.textContent='Update password';btn.disabled=false;}
-  } else {
-    console.log('Password updated successfully',data);
-    document.getElementById('reset-modal').remove();
-    showToast('✓ Password updated! Signing you in...');
-    // Get fresh session
-    const{data:{session}}=await sb.auth.getSession();
-    if(session){
-      currentUser=session.user;
-      await loadProfile();
-      document.getElementById('login-screen').style.display='none';
-      document.getElementById('app').style.display='block';
-      document.getElementById('app').style.opacity='1';
-      document.getElementById('app').style.pointerEvents='all';
-      initApp();
-    } else {
-      showToast('Password updated — please sign in with your new password');
-    }
-  }
-}
-
-async function sendResetLink(){
-  const email=document.getElementById('reset-email')?.value.trim();
-  if(!email||!validEmail(email)){
-    const el=document.getElementById('reset-email');
-    if(el){el.style.borderColor='var(--orange)';el.focus();}
-    showToast('Enter a valid email address');
-    return;
-  }
-  const btn=document.querySelector('#forgot-modal button');
-  if(btn){btn.textContent='Sending...';btn.disabled=true;}
-  const{error}=await sb.auth.resetPasswordForEmail(email,{
-    redirectTo:'https://quest-new-zeta.vercel.app'
-  });
-  if(error){
-    showToast(error.message);
-    if(btn){btn.textContent='Send reset link';btn.disabled=false;}
-  } else {
-    document.getElementById('forgot-modal').remove();
-    showToast('📧 Reset link sent to '+email);
-  }
-}
-
-async function doSignup(){
+function doSignup(){
   const btn=document.getElementById('signup-btn');
   const first=document.getElementById('signup-first').value.trim();
-  const last=(document.getElementById('signup-last')||{}).value||'';
   const email=document.getElementById('signup-email').value.trim();
   const pass=document.getElementById('signup-password').value;
-  const confirm=document.getElementById('signup-password-confirm').value;
   if(!first){shakeInput('signup-first');showToast('Enter your first name');return;}
   if(!email||!validEmail(email)){shakeInput('signup-email');showToast('Enter a valid email address');return;}
   if(pass.length<8){shakeInput('signup-password');showToast('Password must be at least 8 characters');return;}
-  if(pass!==confirm){
-    shakeInput('signup-password-confirm');
-    showToast('Passwords do not match');
-    document.getElementById('signup-password-confirm').style.borderColor='var(--orange)';
-    return;
-  }
   btn.textContent='Creating account...';btn.disabled=true;
-  const fullName=last?`${first} ${last}`:first;
-  const username=email.split('@')[0].replace(/[^a-z0-9_]/gi,'_').toLowerCase();
-  const{data,error}=await sb.auth.signUp({
-    email,password:pass,
-    options:{data:{full_name:fullName,username}}
-  });
-  if(error){
-    btn.textContent='Create account \u2192';btn.disabled=false;
-    shakeInput('signup-email');showToast(error.message);return;
-  }
-  localStorage.setItem('quest_stay_signed_in',document.getElementById('stay-signed-in')?.checked?'true':'false');
-  currentUser=data.user;
-  const qn2=fullName||data.user.email?.split('@')[0]||'User';
-  window._myName=qn2;window._myInitial=qn2[0].toUpperCase();
-  document.querySelectorAll('.profile-name').forEach(el=>el.textContent=qn2);
-  document.querySelectorAll('.profile-avatar-lg').forEach(el=>el.textContent=qn2[0].toUpperCase());
-  await loadProfile();
-  showOnboarding();
+  setTimeout(()=>showOnboarding(),1200);
 }
 
-async function doSocialLogin(provider){
-  // Save stay-signed-in choice to localStorage before redirect (checkbox won't survive redirect)
-  const stayBtn=document.getElementById('stay-signed-in');
-  if(stayBtn?.checked) localStorage.setItem('quest_stay_signed_in','true');
-  else localStorage.removeItem('quest_stay_signed_in');
-  const {error}=await sb.auth.signInWithOAuth({
-    provider:provider.toLowerCase(),
-    options:{redirectTo:'https://quest-new-zeta.vercel.app'}
-  });
-  if(error) showToast(error.message);
-}
-
-// ─── CURRENT USER HELPERS ───────────────────────────────
-// These replace hardcoded "Jordan M." everywhere
-function getMyName(){ return currentProfile?.full_name || 'You'; }
-function getMyInitial(){ return (currentProfile?.full_name||'Y')[0].toUpperCase(); }
-function getMyColor(){ return '#DC2626'; }
-function getMyHandle(){ return currentProfile?.username || 'you'; }
-
-function setProfileName(name){
-  const initial=name[0].toUpperCase();
-  const initialEl=document.getElementById('profile-avatar-initial');
-  if(initialEl) initialEl.textContent=initial;
-  document.querySelectorAll('.profile-name').forEach(el=>el.textContent=name);
-  // Only update avatar-lg text if no photo is set
-  document.querySelectorAll('.profile-avatar-lg').forEach(el=>{
-    if(!el.querySelector('img')) el.textContent=initial;
-  });
-  const pb=document.getElementById('profile-btn');if(pb&&!pb.querySelector('img'))pb.textContent=initial;
-  window._myName=name;window._myInitial=initial;
-}
-
-function setProfilePhoto(url){
-  if(!url) return;
-  // Update avatar in profile panel
-  const avatarEl=document.getElementById('profile-avatar-lg');
-  if(avatarEl){
-    let img=avatarEl.querySelector('img');
-    if(!img){img=document.createElement('img');avatarEl.appendChild(img);}
-    img.src=url;
-    const initial=avatarEl.querySelector('#profile-avatar-initial');
-    if(initial) initial.style.display='none';
-  }
-  // Update profile button
-  const pb=document.getElementById('profile-btn');
-  if(pb){
-    pb.style.backgroundImage=`url(${url})`;
-    pb.style.backgroundSize='cover';
-    pb.style.backgroundPosition='center';
-    pb.textContent='';
-  }
-}
-
-async function handleAvatarUpload(input){
-  const file=input.files[0];if(!file||!currentUser) return;
-  if(file.size>5*1024*1024){showToast('Photo must be under 5MB');return;}
-  showToast('Uploading photo...');
-  try{
-    const ext=file.name.split('.').pop();
-    const path=`avatars/${currentUser.id}.${ext}`;
-    const{error:upErr}=await sb.storage.from('avatars').upload(path,file,{upsert:true,contentType:file.type});
-    if(upErr) throw upErr;
-    const{data}=sb.storage.from('avatars').getPublicUrl(path);
-    const url=data.publicUrl+'?t='+Date.now();
-    await sb.from('profiles').update({avatar_url:url}).eq('id',currentUser.id);
-    setProfilePhoto(url);
-    showToast('✓ Profile photo updated!');
-  }catch(e){
-    console.warn('avatar upload:',e.message);
-    showToast('Upload failed — try a smaller image');
-  }
-}
-
-async function loadProfile(){
-  if(!currentUser) return;
-  // First set from auth metadata immediately
-  const meta=currentUser.user_metadata||{};
-  const metaName=meta.full_name||meta.name||currentUser.email?.split('@')[0]||'User';
-  setProfileName(metaName);
-
-  let {data:profile}=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
-  if(!profile){
-    const email=currentUser.email||'';
-    const fullName=meta.full_name||meta.name||email.split('@')[0]||'User';
-    const username=(email.split('@')[0]||'user'+Date.now()).replace(/[^a-z0-9_]/gi,'_').toLowerCase();
-    const {data:np}=await sb.from('profiles').upsert({
-      id:currentUser.id,full_name:fullName,username,
-      avatar_url:meta.avatar_url||meta.picture||null,
-    },{onConflict:'id'}).select().single();
-    profile=np;
-  }
-  if(profile){
-    currentProfile=profile;
-    const name=profile.full_name||metaName;
-    setProfileName(name);
-    if(profile.avatar_url) setProfilePhoto(profile.avatar_url);
-    document.querySelectorAll('.profile-sub').forEach(el=>el.textContent=
-      (profile.location_city||'Pleasanton, CA')+' · member since '+(new Date(profile.joined_at||Date.now()).getFullYear()));
-  }
-}
-
-async function checkSession(){
-  // First check if this is a password reset redirect
-  if(await checkPasswordReset()) return;
-  const staySignedIn=localStorage.getItem('quest_stay_signed_in')==='true';
-  const{data:{session}}=await sb.auth.getSession();
-  if(session){
-    currentUser=session.user;
-    const meta=currentUser.user_metadata||{};
-    const quickName=meta.full_name||meta.name||currentUser.email?.split('@')[0]||'User';
-    setProfileName(quickName);
-    await loadProfile();
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('onboarding-screen').style.display='none';
-    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';setTimeout(()=>{if(window.map)map.resize();},150);
-    initApp();
-    setTimeout(()=>locateMe(),1000);
-  } else if(staySignedIn){
-    // Had stay-signed-in but session expired — clear it and show login
-    localStorage.removeItem('quest_stay_signed_in');
-    document.getElementById('login-screen').style.display='flex';
-  }
-  // else: no session, no stay preference → login screen shows normally
-}
-
-async function signOut(){
-  await sb.auth.signOut();
-  localStorage.removeItem('quest_stay_signed_in');
-  currentUser=null;currentProfile=null;
-  location.reload();
+function doSocialLogin(provider){
+  const screen = document.getElementById('login-screen');
+  screen.style.opacity = '0';
+  screen.style.transition = 'opacity 0.4s';
+  setTimeout(()=>{ screen.style.display='none'; showOnboarding(); }, 400);
 }
 
 function shakeInput(id){
@@ -4226,13 +3838,14 @@ function finishOnboarding(){
   ob.style.transition='opacity 0.4s';
   setTimeout(()=>{
     ob.style.display='none';
-    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';setTimeout(()=>{if(window.map)map.resize();},150);
+    document.getElementById('app').style.opacity='1';
     initApp(); // init map — no location request yet
   },400);
 }
 
 // Start app hidden until login completes
-// app starts hidden via display:none in HTML
+document.getElementById('app').style.opacity = '0';
+document.getElementById('app').style.transition = 'opacity 0.4s';
 </script>
 <script>
 let selectedPlan = 'annual';
@@ -4318,267 +3931,3 @@ function submitPremiumPayment(){
 </script>
 </body>
 </html>
-<script>
-// ═══════════════════════════════════════════════════════════
-// SUPABASE DATA LAYER — replaces all mock data
-// ═══════════════════════════════════════════════════════════
-
-function colorFromId(id){
-  const c=['#E8622A','#8B5CF6','#0EA5E9','#10B981','#F59E0B','#EC4899','#1D6FA4','#2D6A4F','#D4880A','#C0506A'];
-  let h=0;for(let i=0;i<(id||'').length;i++)h=(h<<5)-h+id.charCodeAt(i);
-  return c[Math.abs(h)%c.length];
-}
-
-function timeAgo(ts){
-  const d=Date.now()-new Date(ts).getTime(),m=Math.floor(d/60000),hr=Math.floor(d/3600000),dy=Math.floor(d/86400000);
-  if(m<1)return'Just now';if(m<60)return m+'m ago';if(hr<24)return hr+'h ago';
-  if(dy<7)return dy+'d ago';return new Date(ts).toLocaleDateString();
-}
-
-function dbEventToLocal(row,myJoinIds=[]){
-  const dtRaw=new Date(row.starts_at).getTime();
-  const dtStr=new Date(row.starts_at).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-  return{
-    id:row.id,type:row.event_type||'hangout',types:row.event_types||[row.event_type||'hangout'],
-    title:row.title,location:row.location_name||'TBD',
-    lat:row.location_lat||37.6624,lng:row.location_lng||-121.8763,
-    dt:dtStr,dtRaw,desc:row.description||'',capacity:row.capacity||null,
-    joined:parseInt(row.attendee_count)||0,attendees:Array.from({length:Math.min(parseInt(row.attendee_count)||0,8)},(_,i)=>i),
-    userJoined:myJoinIds.includes(row.id),isMine:row.host_id===currentUser?.id,
-    paid:row.is_paid||false,price:parseFloat(row.price)||0,
-    hostName:row.host_name||'Unknown',hostColor:colorFromId(row.host_id),
-    host_id:row.host_id,
-    recurring:row.is_recurring||false,recurringLabel:row.recurrence||'',
-    postedAt:new Date(row.created_at).getTime(),
-  };
-}
-
-async function loadAllData(){
-  if(!currentUser){renderList();return;}
-  showToast('Loading Quests...');
-  await Promise.all([loadEvents(),loadFriends(),loadNotifications(),loadMyPosts()]);
-  renderList();renderMarkers();updateProfileStats();updateNotifBadge();
-  subscribeToRealtime();
-}
-
-async function loadMyPosts(){
-  if(!currentUser) return;
-  try{
-    const{data}=await sb.from('posts_with_counts').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
-    userPosts.length=0;
-    (data||[]).forEach(p=>userPosts.push({
-      id:p.id,caption:p.caption||'',mediaUrl:p.media_url||null,
-      mediaType:p.media_type||null,privacy:p.is_public?'public':'private',
-      time:timeAgo(p.created_at),likes:parseInt(p.like_count)||0,
-      liked:false,comments:[],
-    }));
-    if(typeof renderPostsFeed==='function') renderPostsFeed();
-  }catch(e){console.warn('loadMyPosts:',e.message);}
-}
-
-async function loadEvents(){
-  try{
-    const{data,error}=await sb.from('events_with_counts').select('*').eq('is_cancelled',false).order('starts_at',{ascending:true}).limit(50);
-    if(error) throw error;
-    const{data:myA}=await sb.from('event_attendees').select('event_id').eq('user_id',currentUser.id);
-    const myJoinIds=(myA||[]).map(a=>a.event_id);
-    events=(data||[]).map(r=>dbEventToLocal(r,myJoinIds));
-    if(events.length===0) showToast('No Quests yet — post the first one!');
-  }catch(e){
-    console.warn('loadEvents via view failed:',e.message);
-    // Fallback: query events table directly
-    try{
-      const{data}=await sb.from('events').select('*,profiles(full_name)').eq('is_cancelled',false).order('starts_at',{ascending:true}).limit(50);
-      const{data:myA}=await sb.from('event_attendees').select('event_id').eq('user_id',currentUser.id);
-      const myJoinIds=(myA||[]).map(a=>a.event_id);
-      events=(data||[]).map(r=>({...dbEventToLocal(r,myJoinIds),hostName:r.profiles?.full_name||'Unknown'}));
-      if(events.length===0) showToast('No Quests yet — post the first one!');
-    }catch(e2){console.warn('loadEvents fallback failed:',e2.message);events=[];}
-  }
-}
-
-function subscribeToRealtime(){
-  if(!currentUser) return;
-  sb.channel('public-events')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'events'},payload=>{
-      const e=dbEventToLocal(payload.new,[]);
-      if(!events.find(x=>x.id===e.id)){
-        events.unshift(e);
-        renderList();renderMarkers();
-        if(e.host_id!==currentUser.id) showToast('📍 New Quest posted!');
-      }
-    })
-    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'events'},payload=>{
-      const idx=events.findIndex(x=>x.id===payload.new.id);
-      if(idx>=0){const joined=events[idx].userJoined;events[idx]={...dbEventToLocal(payload.new,[]),userJoined:joined};renderList();}
-    })
-    .on('postgres_changes',{event:'DELETE',schema:'public',table:'events'},payload=>{
-      events=events.filter(x=>x.id!==payload.old.id);renderList();renderMarkers();
-    })
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'event_attendees'},payload=>{
-      const e=events.find(x=>x.id===payload.new.event_id);
-      if(e){e.joined++;renderList();}
-    })
-    .on('postgres_changes',{event:'DELETE',schema:'public',table:'event_attendees'},payload=>{
-      const e=events.find(x=>x.id===payload.old.event_id);
-      if(e){e.joined=Math.max(0,e.joined-1);renderList();}
-    })
-    .subscribe();
-
-  sb.channel('my-notifications')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:`user_id=eq.${currentUser.id}`},payload=>{
-      const n=payload.new;
-      notifications.unshift({id:n.id,type:n.type,icon:n.icon||'🔔',title:n.title,sub:n.body||'',time:'Just now',unread:true,eventId:n.related_event_id});
-      updateNotifBadge();renderNotifPanel();
-    })
-    .subscribe();
-}
-
-async function loadFriends(){
-  try{
-    const{data}=await sb.from('friendships').select('requester_id,addressee_id,status').or(`requester_id.eq.${currentUser.id},addressee_id.eq.${currentUser.id}`);
-    friends=new Set();pendingRequests=new Set();
-    (data||[]).forEach(f=>{
-      const other=f.requester_id===currentUser.id?f.addressee_id:f.requester_id;
-      if(f.status==='accepted')friends.add(other);
-      else if(f.status==='pending'&&f.requester_id===currentUser.id)pendingRequests.add(other);
-    });
-    renderFriendsList();
-  }catch(e){console.warn('loadFriends:',e.message);}
-}
-
-async function loadNotifications(){
-  if(!notifsEnabled)return;
-  try{
-    const{data}=await sb.from('notifications').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(30);
-    notifications=(data||[]).map(n=>({id:n.id,type:n.type,icon:n.icon||'🔔',title:n.title,sub:n.body||'',time:timeAgo(n.created_at),unread:!n.read_at,eventId:n.related_event_id}));
-    updateNotifBadge();renderNotifPanel();
-  }catch(e){console.warn('loadNotifications:',e.message);}
-}
-
-async function loadSocialFeed(){
-  if(!currentUser)return;
-  try{
-    const fids=[...friends];
-    let query=sb.from('posts_with_counts').select('*').neq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(20);
-    if(fids.length) query=query.or(`is_public.eq.true,user_id.in.(${fids.join(',')})`);
-    else query=query.eq('is_public',true);
-    const{data}=await query;
-    socialFeedPosts=(data||[]).map(p=>({uid:p.user_id,name:p.author_name||'User',color:colorFromId(p.user_id),handle:p.author_username||'user',isPublic:p.is_public,caption:p.caption||'',time:timeAgo(p.created_at),likes:parseInt(p.like_count)||0}));
-    renderSocialFeed();
-  }catch(e){console.warn('loadSocialFeed:',e.message);}
-}
-
-async function loadNearbyUsers(){
-  if(!currentUser)return;
-  try{
-    const{data}=await sb.from('profiles').select('id,username,full_name,is_public').neq('id',currentUser.id).limit(20);
-    nearbyUsers=(data||[]).map(u=>({uid:u.id,name:u.full_name,color:colorFromId(u.id),handle:u.username,isPublic:u.is_public,mutualFriends:0,distance:(Math.random()*2+0.1).toFixed(1)+'mi'}));
-    renderNearbyProfiles();
-  }catch(e){console.warn('loadNearbyUsers:',e.message);}
-}
-
-// ─── SAVE TO SUPABASE ─────────────────────────────────
-
-async function saveEventToDb(ev){
-  if(!currentUser)return null;
-  try{
-    const{data,error}=await sb.from('events').insert({host_id:currentUser.id,title:ev.title,description:ev.desc,event_type:ev.type,event_types:ev.types,location_name:ev.location,location_lat:ev.lat,location_lng:ev.lng,starts_at:new Date(ev.dtRaw).toISOString(),capacity:ev.capacity,is_paid:ev.paid,price:ev.price||0}).select().single();
-    if(error)throw error;
-    return data;
-  }catch(e){console.warn('saveEvent:',e.message);return null;}
-}
-
-async function joinEventInDb(eventId){
-  if(!currentUser)return;
-  try{await sb.from('event_attendees').upsert({event_id:eventId,user_id:currentUser.id,rsvp:'going'});}
-  catch(e){console.warn('joinEventDb:',e.message);}
-}
-
-async function unjoinEventInDb(eventId){
-  if(!currentUser)return;
-  try{await sb.from('event_attendees').delete().eq('event_id',eventId).eq('user_id',currentUser.id);}
-  catch(e){console.warn('unjoinEventDb:',e.message);}
-}
-
-async function sendFriendRequestToDb(uid){
-  if(!currentUser||!uid)return;
-  try{
-    await sb.from('friendships').upsert({requester_id:currentUser.id,addressee_id:uid,status:'pending'},{onConflict:'requester_id,addressee_id'});
-    await sb.from('notifications').insert({user_id:uid,type:'friend_request',icon:'🤝',title:getMyName()+' sent you a friend request',body:'Tap to accept',related_user_id:currentUser.id});
-  }catch(e){console.warn('friendRequestDb:',e.message);}
-}
-
-async function savePostToDb(caption,mediaUrl,mediaType,isPublic){
-  if(!currentUser)return null;
-  try{
-    const{data,error}=await sb.from('posts').insert({user_id:currentUser.id,caption,media_url:mediaUrl,media_type:mediaType,is_public:isPublic}).select().single();
-    if(error)throw error;return data;
-  }catch(e){console.warn('savePost:',e.message);return null;}
-}
-
-async function markNotifReadInDb(notifId){
-  if(!currentUser)return;
-  try{await sb.from('notifications').update({read_at:new Date().toISOString()}).eq('id',notifId);}
-  catch(e){console.warn('markNotif:',e.message);}
-}
-
-// ─── WIRE INTO EXISTING FUNCTIONS ─────────────────────
-
-// Patch joinEvent to persist
-const _origJoin=window.joinEvent;
-if(_origJoin) window.joinEvent=function(id){_origJoin(id);joinEventInDb(id);};
-
-// Patch unjoinEvent to persist  
-const _origUnjoin=window.unjoinEvent;
-if(_origUnjoin) window.unjoinEvent=function(id){_origUnjoin(id);unjoinEventInDb(id);};
-
-// Patch submitPost to persist
-const _origSubmitPost=window.submitPost;
-if(_origSubmitPost) window.submitPost=async function(){
-  // run original (adds to local UI)
-  _origSubmitPost();
-  // then save to db
-  const caption=document.getElementById('compose-caption')?.value?.trim()||'';
-  const isPublic=document.getElementById('posts-public-toggle')?.checked!==false;
-  if(caption) await savePostToDb(caption,null,null,isPublic);
-};
-
-// Patch sendFriendRequest to persist
-const _origSFR=window.sendFriendRequest;
-if(_origSFR) window.sendFriendRequest=function(uid){_origSFR(uid);sendFriendRequestToDb(uid);};
-
-// Patch submitEvent to persist
-const _origSubmitEvent=window.submitEvent;
-if(_origSubmitEvent) window.submitEvent=async function(){
-  _origSubmitEvent();
-  // find the newest event (just added) and save it
-  const newest=events[0];
-  if(newest){
-    const saved=await saveEventToDb(newest);
-    if(saved){newest.id=saved.id;newest.host_id=currentUser?.id;joinEventInDb(saved.id);}
-  }
-};
-
-// Patch markAllNotifsRead to persist
-const _origMarkRead=window.markAllNotifsRead;
-if(_origMarkRead) window.markAllNotifsRead=function(){
-  _origMarkRead();
-  notifications.forEach(n=>{if(n.unread)markNotifReadInDb(n.id);});
-};
-
-// Patch social tab switches to load real data
-const _origSwitchSocial=window.switchSocialTab;
-if(_origSwitchSocial) window.switchSocialTab=function(tab){
-  _origSwitchSocial(tab);
-  if(tab==='feed') loadSocialFeed();
-  else if(tab==='people') loadNearbyUsers();
-};
-
-// Override initApp to load real data
-const _origInitApp=window.initApp;
-window.initApp=function(){
-  if(_origInitApp)_origInitApp();
-  loadAllData();
-};
-</script>
