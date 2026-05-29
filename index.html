@@ -575,7 +575,7 @@ let currentProfile = null;
 <script>
 // Run synchronously before anything renders — prevents login/onboarding flash
 if(localStorage.getItem('quest_stay_signed_in')==='true'){
-  document.write('<style>#login-screen,#onboarding-screen{display:none!important}#app{display:block!important;opacity:1!important}</style>');
+  document.write('<style>#login-screen,#onboarding-screen{display:none!important}#app{display:block!important;opacity:1!important;pointer-events:none!important}</style>');
 }
 </script>
 <div id="login-screen" style="
@@ -3990,7 +3990,6 @@ async function submitNewPassword(){
       document.getElementById('login-screen').style.display='none';
       document.getElementById('app').style.display='block';
       document.getElementById('app').style.opacity='1';
-      document.getElementById('app').style.pointerEvents='all';
       initApp();
     } else {
       showToast('Password updated — please sign in with your new password');
@@ -4171,7 +4170,7 @@ async function checkSession(){
     await loadProfile();
     document.getElementById('login-screen').style.display='none';
     document.getElementById('onboarding-screen').style.display='none';
-    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';setTimeout(()=>{if(window.map)map.resize();},150);
+    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';setTimeout(()=>{if(window.map)map.resize();},150);
     initApp();
     setTimeout(()=>locateMe(),1000);
   } else if(staySignedIn){
@@ -4229,7 +4228,7 @@ function finishOnboarding(){
   ob.style.transition='opacity 0.4s';
   setTimeout(()=>{
     ob.style.display='none';
-    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';document.getElementById('app').style.pointerEvents='all';setTimeout(()=>{if(window.map)map.resize();},150);
+    document.getElementById('app').style.display='block';document.getElementById('app').style.opacity='1';setTimeout(()=>{if(window.map)map.resize();},150);
     initApp(); // init map — no location request yet
   },400);
 }
