@@ -69,8 +69,7 @@ body.dark .detail-meta-item{background:var(--bg-input)}
 body.dark .mapboxgl-popup-content{background:var(--bg-surface)!important}
 html,body{height:100%;overflow:hidden;font-family:'Sora',sans-serif;background:var(--cream);color:var(--brown)}
 #app{position:fixed;inset:0;z-index:1;pointer-events:none}
-#app>*{pointer-events:none}
-#map,#sidebar,#profile-btn,#messages-btn,#notif-btn,#nearby-profiles-btn,#friends-map-btn,#map-buttons,#detail.open,#profile-panel.open,#messages-panel.open,#notif-panel.open,#nearby-profiles-panel.open,#premium-overlay,#create-sheet,#chat-panel,#detail-footer,#dm-panel.open,#friends-map-overlay,#push-notif-container,#map-notif{pointer-events:all}
+#app>*{pointer-events:all}
 #sidebar{
   position:absolute;top:16px;left:16px;
   width:var(--sidebar-w);
@@ -2644,12 +2643,16 @@ document.addEventListener('DOMContentLoaded',()=>{
   const tbtnDark=document.getElementById('tbtn-dark');
   if(tbtnDark){tbtnDark.style.background='var(--orange)';tbtnDark.style.color='#000';tbtnDark.style.borderColor='var(--orange)';}
   if(tbtnLight){tbtnLight.style.background='var(--bg-surface)';tbtnLight.style.color='var(--warm)';tbtnLight.style.borderColor='var(--border)';}
+  // Init map immediately so it has proper dimensions (outside #app so always visible)
+  initMap();
+  // Check for existing session — skip login if already signed in
   checkSession();
 });
 
 function initApp(){
   document.getElementById('search-input').addEventListener('input',()=>{renderList();renderMarkers();});
-  initMap();
+  if(!window.map) initMap();
+  else setTimeout(()=>map.resize(),150);
   renderList();
   loadAllData();
 }
